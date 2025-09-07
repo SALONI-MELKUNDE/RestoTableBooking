@@ -27,6 +27,14 @@
 - Clear error messages for developers
 - Proper debugging information
 
+## 🚀 **Next Steps**
+
+1. **Install Prerequisites**: Node.js, PostgreSQL
+2. **Follow Setup Guide**: Use `SETUP_GUIDE.md` for detailed instructions
+3. **Configure Environment**: Copy and fill environment files
+4. **Start Application**: Run backend and frontend servers
+5. **Test Features**: Use provided test accounts
+
 
 
 
