@@ -128,5 +128,97 @@ After seeding the database, you can use these test accounts:
 - **Password**: `userpass`
 - **Access**: Browse restaurants, make bookings, leave reviews
 
+## 📱 Features
 
+### For Customers
+- ✅ Browse and search restaurants
+- ✅ Real-time table availability
+- ✅ Book tables with confirmation
+- ✅ Manage bookings and cancellations
+- ✅ Leave reviews and ratings
+- ✅ Join waitlists when full
+
+### For Restaurant Owners
+- ✅ Create and manage restaurant profiles
+- ✅ Set up tables and menus
+- ✅ View and manage bookings
+- ✅ Handle waitlists
+- ✅ Analytics dashboard
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+#### 1. Database Connection Error
+```
+Error: connect ECONNREFUSED 127.0.0.1:5432
+```
+**Solution**: Ensure PostgreSQL is running and `DATABASE_URL` is correct
+
+#### 2. Redis Connection Error
+```
+Redis Client Error: connect ECONNREFUSED 127.0.0.1:6379
+```
+**Solution**: Either install Redis or remove `REDIS_URL` from environment
+
+#### 3. Port Already in Use
+```
+Error: listen EADDRINUSE: address already in use :::3000
+```
+**Solution**: Change `PORT` in backend `.env` or stop the process using the port
+
+#### 4. Module Not Found
+```
+Error: Cannot find module '@prisma/client'
+```
+**Solution**: Run `npx prisma generate` in the backend directory
+
+#### 5. Frontend API Connection Error
+```
+Network Error: Failed to fetch
+```
+**Solution**: Ensure backend is running and `VITE_API_URL` is correct
+
+### Development Tips
+
+1. **Hot Reload**: Both frontend and backend support hot reload during development
+2. **Database Reset**: Use `npx prisma migrate reset` to reset database
+3. **Logs**: Check console logs for detailed error information
+4. **Network**: Ensure no firewall is blocking the ports
+
+## 🚀 Production Deployment
+
+### Backend Deployment
+1. Set `NODE_ENV=production`
+2. Use a production PostgreSQL database
+3. Set up Redis for production
+4. Configure proper JWT secrets
+5. Set up SendGrid and Twilio for notifications
+
+### Frontend Deployment
+1. Build the frontend: `npm run build`
+2. Deploy the `dist` folder to your hosting service
+3. Update `VITE_API_URL` to your production API URL
+
+### Environment Variables for Production
+```env
+NODE_ENV=production
+DATABASE_URL=postgresql://user:pass@prod-db:5432/tabletrek
+REDIS_URL=redis://prod-redis:6379
+JWT_SECRET=very-long-random-secret-key
+REFRESH_TOKEN_SECRET=another-very-long-random-secret-key
+SENDGRID_API_KEY=your-production-sendgrid-key
+TWILIO_ACCOUNT_SID=your-production-twilio-sid
+TWILIO_AUTH_TOKEN=your-production-twilio-token
+```
+
+## 📞 Support
+
+If you encounter any issues:
+1. Check the console logs for error messages
+2. Verify all environment variables are set correctly
+3. Ensure all services (PostgreSQL, Redis) are running
+4. Check the troubleshooting section above
+
+The application is designed to work with minimal configuration - only PostgreS
 
