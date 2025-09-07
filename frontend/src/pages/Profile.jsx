@@ -1,0 +1,200 @@
+import { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { Calendar, Clock, Users, MapPin, X, Star } from 'lucide-react';
+import api from '../services/api';
+
+const Profile = () => {
+  const { user, isAuthenticated } = useAuth();
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [cancelling, setCancelling] = useState(null);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchBookings();
+    }
+  }, [isAuthenticated]);
+
+  const fetchBookings = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get(`/bookings/users/${user.id}/bookings`);
+      setBookings(response.data.bookings);
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelBooking = async (bookingId) => {
+    try {
+      setCancelling(bookingId);
+      await api.patch(`/bookings/${bookingId}/cancel`);
+      
+      // Update the booking in the local state
+      setBookings(bookings.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'CANCELLED' }
+          : booking
+      ));
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      alert('Failed to cancel booking');
+    } finally {
+      setCancelling(null);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  const formatTime = (dateString) => {
+    return new Date(dateString).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'CONFIRMED':
+        return 'bg-green-100 text-green-800';
+      case 'PENDING':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'CANCELLED':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Please sign in to view your profile</h1>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Profile Header */}
+        <div className="card mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">My Profile</h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Personal Information</h2>
+              <div className="space-y-2">
+                <p><span className="font-medium">Name:</span> {user.name}</p>
+                <p><span className="font-medium">Email:</span> {user.email}</p>
+                {user.phone && <p><span className="font-medium">Phone:</span> {user.phone}</p>}
+                <p><span className="font-medium">Role:</span> {user.role}</p>
+              </div>
+            </div>
+            
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Account Statistics</h2>
+              <div className="space-y-2">
+                <p><span className="font-medium">Total Bookings:</span> {bookings.length}</p>
+                <p><span className="font-medium">Confirmed Bookings:</span> {bookings.filter(b => b.status === 'CONFIRMED').length}</p>
+                <p><span className="font-medium">Cancelled Bookings:</span> {bookings.filter(b => b.status === 'CANCELLED').length}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bookings Section */}
+        <div className="card">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">My Bookings</h2>
+          
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+              <p className="mt-4 text-gray-600">Loading bookings...</p>
+            </div>
+          ) : bookings.length === 0 ? (
+            <div className="text-center py-8">
+              <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No bookings found</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {bookings.map((booking) => (
+                <div key={booking.id} className="border border-gray-200 rounded-lg p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900">
+                        {booking.restaurant.name}
+                      </h3>
+                      <div className="flex items-center text-gray-600 mt-1">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        <span className="text-sm">{booking.restaurant.city}</span>
+                      </div>
+                    </div>
+                    
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(booking.status)}`}>
+                      {booking.status}
+                    </span>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="flex items-center text-gray-600">
+                      <Calendar className="h-5 w-5 mr-2" />
+                      <span>{formatDate(booking.startTime)}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <Clock className="h-5 w-5 mr-2" />
+                      <span>{formatTime(booking.startTime)} - {formatTime(booking.endTime)}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-600">
+                      <Users className="h-5 w-5 mr-2" />
+                      <span>{booking.partySize} {booking.partySize === 1 ? 'person' : 'people'}</span>
+                    </div>
+                  </div>
+                  
+                  {booking.table && (
+                    <div className="text-sm text-gray-600 mb-4">
+                      <span className="font-medium">Table:</span> {booking.table.label} ({booking.table.seats} seats)
+                    </div>
+                  )}
+                  
+                  {booking.status === 'CONFIRMED' && (
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => cancelBooking(booking.id)}
+                        disabled={cancelling === booking.id}
+                        className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {cancelling === booking.id ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        ) : (
+                          <X className="h-4 w-4" />
+                        )}
+                        <span>Cancel Booking</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;

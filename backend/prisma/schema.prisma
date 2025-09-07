@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String
+  email         String          @unique
+  phone         String?
+  passwordHash  String
+  role          Role            @default(USER)
+  createdAt     DateTime        @default(now())
+  restaurants   Restaurant[]    @relation("OwnerRestaurants")
+  bookings      Booking[]
+  reviews       Review[]
+  waitlist      WaitlistEntry[]
+  notifications Notification[]
+  refreshTokens RefreshToken[]
+}
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  revoked   Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Restaurant {
+  id          String            @id @default(cuid())
+  ownerId     String
+  owner       User              @relation(fields: [ownerId], references: [id], name: "OwnerRestaurants")
+  name        String   @unique 
+  address     String
+  city        String
+  state       String?
+  zipCode     String?
+  country     String            @default("USA")
+  lat         Float?
+  lon         Float?
+  phone       String?
+  website     String?
+  description String?
+  cuisine     String?
+  priceRange  String?           // $, $$, $$$, $$$$
+  openingTime String?
+  closingTime String?
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+  tables      RestaurantTable[]
+  menus       Menu[]
+  bookings    Booking[]
+  reviews     Review[]
+  waitlist    WaitlistEntry[]
+}
+
+model RestaurantTable {
+  id           String     @id @default(cuid())
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+  label        String
+  seats        Int
+  isActive     Boolean    @default(true)
+  bookings     Booking[]
+}
+
+model Menu {
+  id           String     @id @default(cuid())
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+  name         String
+  description  String?
+  items        MenuItem[]
+}
+
+model MenuItem {
+  id          String  @id @default(cuid())
+  menu        Menu    @relation(fields: [menuId], references: [id])
+  menuId      String
+  name        String
+  description String?
+  price       Float
+  category    String? // Appetizers, Main Course, Desserts, etc.
+  imageUrl    String?
+  ingredients String?
+  allergens   String?
+  available   Boolean @default(true)
+  createdAt   DateTime @default(now())
+}
+
+model Booking {
+  id            String           @id @default(cuid())
+  restaurant    Restaurant       @relation(fields: [restaurantId], references: [id])
+  restaurantId  String
+  user          User             @relation(fields: [userId], references: [id])
+  userId        String
+  table         RestaurantTable? @relation(fields: [tableId], references: [id])
+  tableId       String?
+  partySize     Int
+  startTime     DateTime
+  endTime       DateTime
+  status        BookingStatus    @default(PENDING)
+  meta          Json?
+  createdAt     DateTime         @default(now())
+  notifications Notification[]
+}
+
+model Review {
+  id           String     @id @default(cuid())
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId String
+  user         User       @relation(fields: [userId], references: [id])
+  userId       String
+  rating       Int
+  text         String?
+  createdAt    DateTime   @default(now())
+}
+
+model WaitlistEntry {
+  id            String         @id @default(cuid())
+  restaurant    Restaurant     @relation(fields: [restaurantId], references: [id])
+  restaurantId  String
+  user          User           @relation(fields: [userId], references: [id])
+  userId        String
+  partySize     Int
+  requestedTime DateTime
+  status        WaitlistStatus @default(PENDING)
+  position      Int?
+  createdAt     DateTime       @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+  bookingId String?
+  type      String
+  status    String
+  payload   Json?
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  RESTAURANT_OWNER
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum WaitlistStatus {
+  PENDING
+  NOTIFIED
+  CANCELLED
+}
