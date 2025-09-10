@@ -70,7 +70,6 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - ✅ **UI/UX**
   - Tailwind CSS responsive design
   - Loading spinners and empty states
-  - Error boundaries and fallback UI
 
 ---
 
