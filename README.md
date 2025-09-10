@@ -297,6 +297,14 @@ REDIS_URL=redis://localhost:6379
 ```
 ---
 
+## ⚠️ Known Gaps / What’s Not Fully Wired
+
+- Waitlist: Backend implemented (join/leave/notify), but no frontend UI yet.
+- Analytics tab: Present in UI; no real analytics wiring.
+- Communications tab: UI only; not integrated with backend.
+- SMS (Twilio): Backend service exists; optional and only used in background jobs if configured. Not exposed in UI.
+
+
 ## 🤝 Contributing
 
 1. Fork the repository
