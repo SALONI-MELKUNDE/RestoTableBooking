@@ -185,7 +185,7 @@ Network Error: Failed to fetch
 2. Use a production PostgreSQL database
 3. Set up Redis for production
 4. Configure proper JWT secrets
-5. Set up SendGrid and Twilio for notifications
+5. Set up SendGrid for notifications
 
 ### Frontend Deployment
 1. Build the frontend: `npm run build`
