@@ -87,7 +87,6 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - ✅ Sanitization of user inputs
 - ✅ Secure password hashing with bcrypt
 - ✅ JWT-based session management
-- ✅ Rate-limit considerations added
 
 ---
 
