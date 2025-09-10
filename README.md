@@ -1,23 +1,22 @@
-# TableTrek - Restaurant Booking Platform
+# TableTrek - Restaurant Table Booking Platform
 
-TableTrek is a comprehensive restaurant booking platform that allows users to discover, book tables at restaurants, and manage their dining experiences. Restaurant owners can manage their establishments, view bookings, and handle customer interactions.
+A full-stack web app for restaurant discovery, booking, reviews, and owner/admin management.
 
 ## 🚀 Features
 
-### For Customers
-- **Restaurant Discovery**: Browse and search restaurants by name, city, date, and time.
-- **Real-time Booking**: Book tables with real-time availability checking. 
-- **User Dashboard**: View and manage bookings, cancel reservations
-- **Reviews & Ratings**: Leave reviews after dining experiences
-- **Waitlist**: Join waitlists when restaurants are full
-- **Notifications**: Email confirmations and reminders
+### Customers
+- Browse/search restaurants
+- Real-time booking availability check
+- Book and cancel tables
+- Manage personal bookings
+- Instant feedback if all tables are booked (e.g., "No available tables for selected time")  
+- Leave reviews & ratings
 
-### For Restaurant Owners (Admin)
-- **Restaurant Management**: Create and manage restaurant profiles
-- **Table Management**: Add and configure restaurant tables
-- **Menu Management**: Create menus and menu items
-- **Booking Management**: View and manage all restaurant bookings
-- **Customer Communication**: Send notifications to customers
+### Restaurant Owners (Admin)
+- Manage restaurant profile
+- Manage tables and menus
+- Approve/reject bookings
+- Owner dashboard with settings and management tabs
 
 ## 🛠️ Tech Stack
 
@@ -110,7 +109,7 @@ npx prisma db seed
 ### 4. Frontend Setup
 
 ```bash
-cd ../frontend
+cd frontend
 npm install
 ```
 
@@ -142,14 +141,12 @@ The application will be available at:
 
 The application uses the following main entities:
 
-- **Users**: Customer and restaurant owner accounts
+- **Users**: Customer and Admin accounts
 - **Restaurants**: Restaurant information and settings
 - **RestaurantTables**: Table configurations for each restaurant
 - **Menus & MenuItems**: Restaurant menu management
-- **Bookings**: Customer reservations
+- **Bookings**: Customer table reservations
 - **Reviews**: Customer reviews and ratings
-- **WaitlistEntries**: Waitlist management
-- **Notifications**: Communication tracking
 
 ## 🔌 API Endpoints
 
@@ -179,12 +176,6 @@ The application uses the following main entities:
 - `POST /api/restaurants/:id/reviews` - Create review
 - `PATCH /api/reviews/:id` - Update review
 - `DELETE /api/reviews/:id` - Delete review
-
-### Waitlist
-- `POST /api/restaurants/:id/waitlist` - Join waitlist
-- `DELETE /api/waitlist/:id` - Leave waitlist
-- `GET /api/users/:id/waitlist` - Get user waitlist
-- `GET /api/admin/restaurants/:id/waitlist` - Get restaurant waitlist (Admin)
 
 ## 🧪 Testing
 
@@ -238,14 +229,6 @@ Configure SendGrid in your `.env` file:
 SENDGRID_API_KEY=your-sendgrid-api-key
 ```
 
-### SMS Notifications
-Configure Twilio in your `.env` file:
-```env
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
-TWILIO_PHONE_NUMBER=your-twilio-phone-number
-```
-
 ### Redis Configuration
 Ensure Redis is running and accessible:
 ```env
@@ -263,16 +246,6 @@ REDIS_URL=redis://localhost:6379
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🎯 Roadmap
-
--  Mobile app development
--  Advanced analytics dashboard
--  Integration with payment gateways
--  Multi-language support
--  Advanced search and filtering
--  Social media integration
--  Loyalty program features
 
 ---
 
