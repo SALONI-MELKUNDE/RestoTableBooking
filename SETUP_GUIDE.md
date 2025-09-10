@@ -212,5 +212,5 @@ If you encounter any issues:
 3. Ensure all services (PostgreSQL, Redis) are running
 4. Check the troubleshooting section above
 
-The application is designed to work with minimal configuration - only PostgreS
+The application is designed to work with minimal configuration - only PostgreSQL
 
