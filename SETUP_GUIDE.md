@@ -1,5 +1,41 @@
 # TableTrek - Complete Setup Guide
 
+---
+
+## 📑 Index
+
+- [🚀 Quick Start](#-quick-start)
+  - [Prerequisites](#prerequisites)
+  - [1. Install Dependencies](#1-install-dependencies)
+  - [2. Database Setup](#2-database-setup)
+  - [3. Environment Configuration](#3-environment-configuration)
+  - [4. Start the Application](#4-start-the-application)
+  - [5. Access the Application](#5-access-the-application)
+- [🔧 Configuration Details](#-configuration-details)
+  - [Database Configuration](#database-configuration)
+  - [Authentication](#authentication)
+  - [Optional Services](#optional-services)
+    - [Redis](#redis-recommended-for-production)
+    - [Email Notifications (SendGrid)](#email-notifications-sendgrid)
+- [🧪 Test Accounts](#-test-accounts)
+- [📱 Features](#-features)
+  - [For Customers](#for-customers)
+  - [For Admin](#for-admin)
+- [🚨 Troubleshooting](#-troubleshooting)
+  - [1. Database Connection Error](#1-database-connection-error)
+  - [2. Redis Connection Error](#2-redis-connection-error)
+  - [3. Port Already in Use](#3-port-already-in-use)
+  - [4. Module Not Found](#4-module-not-found)
+  - [5. Frontend API Connection Error](#5-frontend-api-connection-error)
+  - [Development Tips](#development-tips)
+- [🚀 Production Deployment](#-production-deployment)
+  - [Backend Deployment](#backend-deployment)
+  - [Frontend Deployment](#frontend-deployment)
+  - [Environment Variables for Production](#environment-variables-for-production)
+- [📞 Support](#-support)
+
+---
+
 ## 🚀 Quick Start
 
 ### Prerequisites
@@ -82,6 +118,8 @@ npm run dev
 - **Frontend**: http://localhost:5173
 - **Backend API**: http://localhost:3000
 
+---
+
 ## 🔧 Configuration Details
 
 ### Database Configuration
@@ -108,6 +146,8 @@ The application uses PostgreSQL with Prisma ORM. The database schema includes:
 - Set `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL`
 - Works without SendGrid (logs emails to console)
 
+---
+
 ## 🧪 Test Accounts
 
 After seeding the database, you can use these test accounts:
@@ -121,6 +161,8 @@ After seeding the database, you can use these test accounts:
 - **Email**: `user@example.com`
 - **Password**: `userpass`
 - **Access**: Browse restaurants, make bookings, leave reviews
+
+---
 
 ## 📱 Features
 
@@ -136,6 +178,8 @@ After seeding the database, you can use these test accounts:
 - ✅ Create and manage restaurant profiles
 - ✅ Set up tables and menus
 - ✅ View and manage bookings
+
+---
 
 ## 🚨 Troubleshooting
 
@@ -178,6 +222,8 @@ Network Error: Failed to fetch
 3. **Logs**: Check console logs for detailed error information
 4. **Network**: Ensure no firewall is blocking the ports
 
+---
+
 ## 🚀 Production Deployment
 
 ### Backend Deployment
@@ -203,6 +249,7 @@ SENDGRID_API_KEY=your-production-sendgrid-key
 TWILIO_ACCOUNT_SID=your-production-twilio-sid
 TWILIO_AUTH_TOKEN=your-production-twilio-token
 ```
+---
 
 ## 📞 Support
 
