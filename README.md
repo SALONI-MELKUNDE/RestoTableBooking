@@ -304,6 +304,7 @@ REDIS_URL=redis://localhost:6379
 - Communications tab: UI only; not integrated with backend.
 - SMS (Twilio): Backend service exists; optional and only used in background jobs if configured. Not exposed in UI.
 
+---
 
 ## 🤝 Contributing
 
