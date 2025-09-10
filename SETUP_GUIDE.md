@@ -130,7 +130,7 @@ After seeding the database, you can use these test accounts:
 - ✅ Book tables with confirmation
 - ✅ Manage bookings and cancellations
 - ✅ Leave reviews and ratings
-- ✅ Join waitlists when full
+- ✅ Instant feedback if all tables are booked (e.g., "No available tables for selected time")
 
 ### For Restaurant Owners
 - ✅ Create and manage restaurant profiles
