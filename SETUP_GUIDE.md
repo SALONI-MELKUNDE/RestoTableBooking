@@ -89,7 +89,6 @@ The application uses PostgreSQL with Prisma ORM. The database schema includes:
 - Users (customers and restaurant owners)
 - Restaurants and tables
 - Bookings and reviews
-- Waitlist entries
 - Notifications
 
 ### Authentication
