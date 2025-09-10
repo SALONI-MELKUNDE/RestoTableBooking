@@ -91,8 +91,6 @@ This file documents the fixes, improvements, and known limitations in the TableT
 ---
 
 ## 🚀 Performance Improvements
-- ✅ Optimized Prisma queries with indexing
-- ✅ Consistent pagination & filtering considered
 - ✅ Reduced duplicate queries in booking checks
 - ✅ Graceful degradation when Redis/email not available
 
