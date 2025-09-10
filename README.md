@@ -2,6 +2,39 @@
 
 A full-stack web app for restaurant discovery, booking, reviews, and owner/admin management.
 
+---
+
+## 📑 Index
+- [Features](#-features)
+  - [Customers](#customers)
+  - [Restaurant Owners (Admin)](#restaurant-owners-admin)
+- [Tech Stack](#-tech-stack)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Backend Setup](#2-backend-setup)
+  - [3. Database Setup](#3-database-setup)
+  - [4. Frontend Setup](#4-frontend-setup)
+  - [5. Start the Application](#5-start-the-application)
+- [Database Schema (Overview)](#-database-schema-overview)
+- [API Endpoints](#-api-endpoints)
+  - [Authentication](#authentication)
+  - [Restaurants](#restaurants)
+  - [Bookings](#bookings)
+  - [Reviews](#reviews)
+  - [Menus (public + owner)](#menus-public--owner)
+- [Configuration](#-configuration)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Usage](#-usage)
+  - [For Customers](#for-customers)
+  - [For Restaurant Owners](#for-restaurant-owners)
+- [Known Gaps / What’s Not Fully Wired](#-known-gaps--whats-not-fully-wired)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
 ## 🚀 Features
 
 ### Customers
