@@ -269,6 +269,20 @@ npm test
 
 ## 🔧 Configuration
 
+### PostgreSQL Connection
+Configure Database connection in your `.env` file:
+```env
+DATABASE_URL=postgresql://username:password@localhost:5432/tabletrek?schema=public
+```
+
+### JWT Configuration
+```env
+JWT_SECRET=your-jwt-secret
+JWT_EXPIRES_IN=15m
+REFRESH_TOKEN_SECRET=your-refresh-secret
+REFRESH_TOKEN_EXPIRES_IN=7d
+```
+
 ### Email Notifications
 Configure SendGrid in your `.env` file:
 ```env
