@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { MapPin, User, LogOut, Settings, ChefHat, Shield, Building2 } from 'lucide-react';
+import { MapPin, User, LogOut, Settings, ChefHat, Building2 } from 'lucide-react';
 
 const Header = () => {
-  const { user, logout, isAuthenticated, isAdmin } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -44,23 +44,6 @@ const Header = () => {
               >
                 <Building2 className="h-4 w-4" />
                 <span>My Restaurant</span>
-              </Link>
-            )}
-            {isAuthenticated && user?.role === 'ADMIN' && (
-              <Link
-                to="/super-admin"
-                className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1"
-              >
-                <Shield className="h-4 w-4" />
-                <span>Super Admin</span>
-              </Link>
-            )}
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Admin Dashboard
               </Link>
             )}
           </nav>

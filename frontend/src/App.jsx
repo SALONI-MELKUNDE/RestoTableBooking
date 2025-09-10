@@ -7,10 +7,9 @@ import Restaurant from './pages/Restaurant';
 import Booking from './pages/Booking';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
-import RestaurantAdmin from './pages/RestaurantAdmin';
-import SuperAdmin from './pages/SuperAdmin';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import LearnMore from './pages/LearnMore';
 
 function App() {
   return (
@@ -24,11 +23,10 @@ function App() {
               <Route path="/restaurant/:id" element={<Restaurant />} />
               <Route path="/booking/:restaurantId" element={<Booking />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/restaurant-admin" element={<RestaurantAdmin />} />
-              <Route path="/super-admin" element={<SuperAdmin />} />
+              <Route path="/restaurant-admin" element={<AdminDashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route path="/learn-more" element={<LearnMore />} />
             </Routes>
           </main>
           <Footer />

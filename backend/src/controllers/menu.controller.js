@@ -37,7 +37,7 @@ async function createMenu(req, res, next) {
       return res.status(404).json({ message: 'Restaurant not found' });
     }
     
-    if (restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
@@ -71,7 +71,7 @@ async function addMenuItem(req, res, next) {
       return res.status(404).json({ message: 'Menu not found' });
     }
     
-    if (menu.restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (menu.restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
@@ -114,7 +114,7 @@ async function updateMenuItem(req, res, next) {
       return res.status(404).json({ message: 'Menu item not found' });
     }
     
-    if (menuItem.menu.restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (menuItem.menu.restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     
@@ -157,7 +157,7 @@ async function deleteMenuItem(req, res, next) {
       return res.status(404).json({ message: 'Menu item not found' });
     }
     
-    if (menuItem.menu.restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (menuItem.menu.restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     

@@ -88,7 +88,7 @@ async function getUserWaitlist(req, res, next) {
   try {
     const { userId } = req.params;
     
-    if (req.user.id !== userId && req.user.role !== 'ADMIN') {
+    if (req.user.id !== userId) {
       return res.status(403).json({ message: 'Not authorized to view this waitlist' });
     }
     

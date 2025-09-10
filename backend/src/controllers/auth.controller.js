@@ -1,5 +1,5 @@
 const prisma = require('../config/db');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 const sendEmail = require('../services/email.service');
 const addMinutes = (mins) => new Date(Date.now() + mins*60*1000);
@@ -31,7 +31,7 @@ async function register(req, res, next) {
         email: email.toLowerCase().trim(), 
         phone: phone?.trim(), 
         passwordHash, 
-        role: role === 'ADMIN' ? 'ADMIN' : 'USER' 
+        role: role === 'RESTAURANT_OWNER' ? 'RESTAURANT_OWNER' : 'USER' 
       } 
     });
     
@@ -68,32 +68,6 @@ async function login(req, res, next) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
     
-    // Check for super admin credentials
-    if (email === 'admin@tabletrek.com' && password === 'admin123') {
-      // Create or get admin user
-      let adminUser = await prisma.user.findUnique({ where: { email } });
-      if (!adminUser) {
-        const passwordHash = await bcrypt.hash(password, 10);
-        adminUser = await prisma.user.create({
-          data: {
-            name: 'Super Admin',
-            email: 'admin@tabletrek.com',
-            password: passwordHash,
-            role: 'ADMIN'
-          }
-        });
-      }
-      
-      const tokens = {
-        accessToken: signAccessToken({ sub: adminUser.id, role: adminUser.role }),
-        refreshToken: signRefreshToken({ sub: adminUser.id, role: adminUser.role })
-      };
-      
-      return res.json({ 
-        user: { id: adminUser.id, name: adminUser.name, email: adminUser.email, role: adminUser.role }, 
-        tokens 
-      });
-    }
     
     const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
     if (!user) {

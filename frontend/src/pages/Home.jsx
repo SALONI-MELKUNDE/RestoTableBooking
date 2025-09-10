@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, Clock, Users } from 'lucide-react';
 import api from '../services/api';
+import GoogleMap from '../components/GoogleMap';
 
 const Home = () => {
   const [restaurants, setRestaurants] = useState([]);
@@ -62,12 +63,23 @@ const Home = () => {
               Discover amazing restaurants and book your next dining experience with TableTrek
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button className="btn-accent px-8 py-4 text-lg">
+              <button 
+                onClick={() => {
+                  const featuredSection = document.getElementById('featured-restaurants');
+                  if (featuredSection) {
+                    featuredSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }
+                }}
+                className="btn-accent px-8 py-4 text-lg"
+              >
                 Explore Restaurants
               </button>
-              <button className="btn-outline bg-white/10 border-white/30 text-white hover:bg-white/20 px-8 py-4 text-lg">
+              <Link 
+                to="/learn-more"
+                className="btn-outline bg-white/10 border-white/30 text-white hover:bg-white/20 px-8 py-4 text-lg inline-block text-center"
+              >
                 Learn More
-              </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -170,7 +182,7 @@ const Home = () => {
       </div>
 
       {/* Restaurants Grid */}
-      <div className="container-fluid py-16">
+      <div id="featured-restaurants" className="container-fluid py-16">
         <div className="text-center mb-12">
           <h2 className="heading-responsive text-neutral-800 mb-4">
             Featured Restaurants
@@ -190,9 +202,19 @@ const Home = () => {
             {filteredRestaurants.map((restaurant) => (
               <div key={restaurant.id} className="card-premium group animate-fade-in">
                 <div className="relative mb-6 overflow-hidden rounded-xl">
-                  <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-primary-200 flex-center group-hover:scale-105 transition-transform duration-300">
-                    <MapPin className="h-16 w-16 text-primary-400" />
-                  </div>
+                  {restaurant.lat && restaurant.lon ? (
+                    <GoogleMap 
+                      lat={parseFloat(restaurant.lat)}
+                      lon={parseFloat(restaurant.lon)}
+                      name={restaurant.name}
+                      address={restaurant.address}
+                      className="w-full h-48 group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-br from-primary-100 to-primary-200 flex-center group-hover:scale-105 transition-transform duration-300">
+                      <MapPin className="h-16 w-16 text-primary-400" />
+                    </div>
+                  )}
                   <div className="absolute top-4 right-4">
                     <div className="flex items-center space-x-1 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full">
                       <Star className="h-4 w-4 text-warning-500 fill-current" />

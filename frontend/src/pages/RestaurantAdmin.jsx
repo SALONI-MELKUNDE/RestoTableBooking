@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import TablesTab from '../components/admin/TablesTab';
+import AnalyticsTab from '../components/admin/AnalyticsTab';
+import CommunicationsTab from '../components/admin/CommunicationsTab';
 import { 
   Building2, 
   Menu, 
@@ -14,7 +17,30 @@ import {
   Globe, 
   Clock,
   DollarSign,
-  Star
+  Star,
+  BarChart3,
+  MessageSquare,
+  CheckCircle,
+  XCircle,
+  ChefHat,
+  TrendingUp,
+  TrendingDown,
+  Eye,
+  Filter,
+  Search,
+  Download,
+  Send,
+  Bell,
+  Mail,
+  Smartphone,
+  Grid3X3,
+  Layout,
+  PieChart,
+  LineChart,
+  Calendar as CalendarIcon,
+  Clock as ClockIcon,
+  ArrowUpRight,
+  ArrowDownRight
 } from 'lucide-react';
 
 const RestaurantAdmin = () => {
@@ -27,8 +53,10 @@ const RestaurantAdmin = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchRestaurants();
-  }, []);
+    if (user) {
+      fetchRestaurants();
+    }
+  }, [user]);
 
   useEffect(() => {
     if (selectedRestaurant) {
@@ -38,6 +66,11 @@ const RestaurantAdmin = () => {
   }, [selectedRestaurant]);
 
   const fetchRestaurants = async () => {
+    if (!user || !user.id) {
+      console.log('User not loaded yet, skipping restaurant fetch');
+      return;
+    }
+    
     try {
       const response = await fetch('/api/restaurants', {
         headers: {
@@ -45,7 +78,7 @@ const RestaurantAdmin = () => {
         }
       });
       const data = await response.json();
-      const userRestaurants = data.restaurants.filter(r => r.ownerId === user.id);
+      const userRestaurants = Array.isArray(data) ? data.filter(r => r.ownerId === user.id) : [];
       setRestaurants(userRestaurants);
       if (userRestaurants.length > 0) {
         setSelectedRestaurant(userRestaurants[0]);
@@ -145,8 +178,11 @@ const RestaurantAdmin = () => {
           <nav className="flex space-x-8">
             {[
               { id: 'overview', label: 'Overview', icon: Building2 },
+              { id: 'tables', label: 'Tables', icon: Grid3X3 },
               { id: 'menus', label: 'Menus', icon: Menu },
               { id: 'bookings', label: 'Bookings', icon: Calendar },
+              { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+              { id: 'communications', label: 'Communications', icon: MessageSquare },
               { id: 'settings', label: 'Settings', icon: Settings }
             ].map(tab => (
               <button
@@ -171,11 +207,20 @@ const RestaurantAdmin = () => {
         {activeTab === 'overview' && (
           <OverviewTab restaurant={selectedRestaurant} bookings={bookings} />
         )}
+        {activeTab === 'tables' && (
+          <TablesTab restaurant={selectedRestaurant} onRestaurantUpdate={fetchRestaurants} />
+        )}
         {activeTab === 'menus' && (
           <MenusTab restaurant={selectedRestaurant} menus={menus} onMenusUpdate={fetchMenus} />
         )}
         {activeTab === 'bookings' && (
           <BookingsTab restaurant={selectedRestaurant} bookings={bookings} onBookingsUpdate={fetchBookings} />
+        )}
+        {activeTab === 'analytics' && (
+          <AnalyticsTab restaurant={selectedRestaurant} bookings={bookings} />
+        )}
+        {activeTab === 'communications' && (
+          <CommunicationsTab restaurant={selectedRestaurant} />
         )}
         {activeTab === 'settings' && (
           <SettingsTab restaurant={selectedRestaurant} onRestaurantUpdate={fetchRestaurants} />

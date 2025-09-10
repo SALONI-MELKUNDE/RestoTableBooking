@@ -270,7 +270,7 @@ const createMenu = async (req, res, next) => {
 const createMenuItem = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, description, price, available } = req.body;
+    const { name, description, price, available, category, ingredients, allergens } = req.body;
     
     // Check if user owns the restaurant that owns this menu
     const menu = await prisma.menu.findUnique({
@@ -292,11 +292,181 @@ const createMenuItem = async (req, res, next) => {
         description,
         price: parseFloat(price),
         available: available !== false,
+        category: category || 'MAIN_COURSE',
+        ingredients,
+        allergens,
         menuId: id
       }
     });
     
     res.status(201).json(menuItem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update menu item
+const updateMenuItem = async (req, res, next) => {
+  try {
+    const { itemId } = req.params;
+    const { name, description, price, available, category, ingredients, allergens } = req.body;
+    
+    // Check if user owns the restaurant that owns this menu item
+    const menuItem = await prisma.menuItem.findUnique({
+      where: { id: itemId },
+      include: { 
+        menu: { 
+          include: { restaurant: true } 
+        } 
+      }
+    });
+    
+    if (!menuItem) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+    
+    if (menuItem.menu.restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this menu item' });
+    }
+    
+    const updatedMenuItem = await prisma.menuItem.update({
+      where: { id: itemId },
+      data: {
+        name,
+        description,
+        price: price ? parseFloat(price) : undefined,
+        available: available !== undefined ? available : undefined,
+        category,
+        ingredients,
+        allergens
+      }
+    });
+    
+    res.json(updatedMenuItem);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Delete menu item
+const deleteMenuItem = async (req, res, next) => {
+  try {
+    const { itemId } = req.params;
+    
+    // Check if user owns the restaurant that owns this menu item
+    const menuItem = await prisma.menuItem.findUnique({
+      where: { id: itemId },
+      include: { 
+        menu: { 
+          include: { restaurant: true } 
+        } 
+      }
+    });
+    
+    if (!menuItem) {
+      return res.status(404).json({ message: 'Menu item not found' });
+    }
+    
+    if (menuItem.menu.restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this menu item' });
+    }
+    
+    await prisma.menuItem.delete({
+      where: { id: itemId }
+    });
+    
+    res.json({ message: 'Menu item deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update menu
+const updateMenu = async (req, res, next) => {
+  try {
+    const { menuId } = req.params;
+    const { name, description } = req.body;
+    
+    // Check if user owns the restaurant that owns this menu
+    const menu = await prisma.menu.findUnique({
+      where: { id: menuId },
+      include: { restaurant: true }
+    });
+    
+    if (!menu) {
+      return res.status(404).json({ message: 'Menu not found' });
+    }
+    
+    if (menu.restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this menu' });
+    }
+    
+    const updatedMenu = await prisma.menu.update({
+      where: { id: menuId },
+      data: { name, description }
+    });
+    
+    res.json(updatedMenu);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get restaurant menus
+const getRestaurantMenus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Check if user owns the restaurant
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id },
+      include: {
+        menus: {
+          include: {
+            items: true
+          }
+        }
+      }
+    });
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found' });
+    }
+    
+    if (restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to view this restaurant\'s menus' });
+    }
+    
+    res.json({ menus: restaurant.menus });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Delete menu
+const deleteMenu = async (req, res, next) => {
+  try {
+    const { menuId } = req.params;
+    
+    // Check if user owns the restaurant that owns this menu
+    const menu = await prisma.menu.findUnique({
+      where: { id: menuId },
+      include: { restaurant: true }
+    });
+    
+    if (!menu) {
+      return res.status(404).json({ message: 'Menu not found' });
+    }
+    
+    if (menu.restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete this menu' });
+    }
+    
+    await prisma.menu.delete({
+      where: { id: menuId }
+    });
+    
+    res.json({ message: 'Menu deleted successfully' });
   } catch (err) {
     next(err);
   }
@@ -349,7 +519,7 @@ const getRestaurantBookings = async (req, res, next) => {
       return res.status(404).json({ message: 'Restaurant not found' });
     }
     
-    if (restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to view bookings for this restaurant' });
     }
     
@@ -398,7 +568,7 @@ const updateBookingStatus = async (req, res, next) => {
     }
     
     // Check if user owns the restaurant
-    if (booking.restaurant.ownerId !== req.user.id && req.user.role !== 'ADMIN') {
+    if (booking.restaurant.ownerId !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to update this booking' });
     }
     
@@ -426,6 +596,97 @@ const updateBookingStatus = async (req, res, next) => {
   }
 };
 
+// Get restaurant tables
+const getRestaurantTables = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    // Check if user owns this restaurant
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id }
+    });
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found' });
+    }
+    
+    if (restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to view tables for this restaurant' });
+    }
+    
+    const tables = await prisma.restaurantTable.findMany({
+      where: { restaurantId: id },
+      orderBy: { label: 'asc' }
+    });
+    
+    res.json({ tables });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update table
+const updateTable = async (req, res, next) => {
+  try {
+    const { id, tableId } = req.params;
+    const { label, seats, isActive } = req.body;
+    
+    // Check if user owns this restaurant
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id }
+    });
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found' });
+    }
+    
+    if (restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update tables for this restaurant' });
+    }
+    
+    const table = await prisma.restaurantTable.update({
+      where: { id: tableId },
+      data: {
+        label,
+        seats: seats ? parseInt(seats) : undefined,
+        isActive: isActive !== undefined ? isActive : undefined
+      }
+    });
+    
+    res.json(table);
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Delete table
+const deleteTable = async (req, res, next) => {
+  try {
+    const { id, tableId } = req.params;
+    
+    // Check if user owns this restaurant
+    const restaurant = await prisma.restaurant.findUnique({
+      where: { id }
+    });
+    
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found' });
+    }
+    
+    if (restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to delete tables for this restaurant' });
+    }
+    
+    await prisma.restaurantTable.delete({
+      where: { id: tableId }
+    });
+    
+    res.json({ message: 'Table deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   listRestaurants,
   getRestaurant,
@@ -433,8 +694,16 @@ module.exports = {
   updateRestaurant,
   deleteRestaurant,
   createMenu,
+  getRestaurantMenus,
+  updateMenu,
+  deleteMenu,
   createMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
   createTable,
   getRestaurantBookings,
-  updateBookingStatus
+  updateBookingStatus,
+  getRestaurantTables,
+  updateTable,
+  deleteTable
 };
