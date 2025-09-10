@@ -221,6 +221,7 @@ npm test
 Configure SendGrid in your `.env` file:
 ```env
 SENDGRID_API_KEY=your-sendgrid-api-key
+SENDGRID_FROM_EMAIL=no-reply@yourdomain.com
 ```
 
 ### Redis Configuration
