@@ -28,7 +28,7 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 - [Deployment](#-deployment)
 - [Usage](#-usage)
   - [For Customers](#for-customers)
-  - [For Restaurant Owners](#for-restaurant-owners)
+  - [For Restaurant Owners](#for-restaurant-owners (Admin))
 - [Known Gaps / What’s Not Fully Wired](#-known-gaps--whats-not-fully-wired)
 - [Contributing](#-contributing)
 - [License](#-license)
