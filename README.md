@@ -258,7 +258,7 @@ npm test
 4. **Manage Bookings**: View and cancel bookings in your profile
 5. **Leave Reviews**: Rate and review restaurants after dining
 
-### For Restaurant Owners
+### For Admin
 1. **Register as Admin**: Sign up with admin role
 2. **Add Restaurant**: Create your restaurant profile
 3. **Set Up Tables**: Configure table capacities
