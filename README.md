@@ -80,11 +80,6 @@ REFRESH_TOKEN_EXPIRES_IN=7d
 # Email
 SENDGRID_API_KEY=your-sendgrid-api-key
 
-# SMS
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
-TWILIO_PHONE_NUMBER=your-twilio-phone-number
-
 # External APIs
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 OPENWEATHER_API_KEY=your-openweather-api-key
@@ -216,10 +211,9 @@ npm test
 ### For Restaurant Owners
 1. **Register as Admin**: Sign up with admin role
 2. **Add Restaurant**: Create your restaurant profile
-3. **Set Up Tables**: Configure table layouts and capacities
+3. **Set Up Tables**: Configure table capacities
 4. **Manage Menu**: Add menus and menu items
 5. **View Bookings**: Monitor reservations and customer details
-6. **Handle Waitlist**: Manage waitlist entries and notifications
 
 ## 🔧 Configuration
 
