@@ -51,6 +51,8 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 - Approve/reject bookings
 - Owner dashboard with settings and management tabs
 
+---
+
 ## 🛠️ Tech Stack
 
 ### Backend
@@ -69,6 +71,8 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 - **Axios** for API calls
 - **Lucide React** for icons
 
+---
+
 ## 📋 Prerequisites
 
 Before running the application, make sure you have:
@@ -78,6 +82,8 @@ Before running the application, make sure you have:
 - Redis server
 - SendGrid account (for emails)
 - Twilio account (for SMS)
+
+---
 
 ## 🚀 Installation & Setup
 
@@ -161,9 +167,13 @@ cd frontend
 npm run dev
 ```
 
+---
+
 The application will be available at:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:3000
+
+---
 
 ## 📊 Database Schema
 
@@ -175,6 +185,8 @@ The application uses the following main entities:
 - **Menus & MenuItems**: Restaurant menu management
 - **Bookings**: Customer table reservations
 - **Reviews**: Customer reviews and ratings
+
+---
 
 ## 🔌 API Endpoints
 
@@ -205,6 +217,8 @@ The application uses the following main entities:
 - `PATCH /api/reviews/:id` - Update review
 - `DELETE /api/reviews/:id` - Delete review
 
+---
+
 ## 🧪 Testing
 
 ### Backend Tests
@@ -218,6 +232,7 @@ npm test
 cd frontend
 npm test
 ```
+---
 
 ## 🚀 Deployment
 
@@ -231,6 +246,8 @@ npm test
 2. Set build command: `npm run build`
 3. Set output directory: `dist`
 4. Set environment variables
+
+---
 
 ## 📱 Usage
 
@@ -248,6 +265,8 @@ npm test
 4. **Manage Menu**: Add menus and menu items
 5. **View Bookings**: Monitor reservations and customer details
 
+---
+
 ## 🔧 Configuration
 
 ### Email Notifications
@@ -262,6 +281,7 @@ Ensure Redis is running and accessible:
 ```env
 REDIS_URL=redis://localhost:6379
 ```
+---
 
 ## 🤝 Contributing
 
@@ -270,6 +290,8 @@ REDIS_URL=redis://localhost:6379
 3. Commit your changes (`git commit -m 'Add some amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+---
 
 ## 📄 License
 
