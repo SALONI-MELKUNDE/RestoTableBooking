@@ -6,7 +6,7 @@ TableTrek is a comprehensive restaurant booking platform that allows users to di
 
 ### For Customers
 - **Restaurant Discovery**: Browse and search restaurants by name, city, date, and time.
-- **Real-time Booking**: Book tables with real-time availability checking
+- **Real-time Booking**: Book tables with real-time availability checking. 
 - **User Dashboard**: View and manage bookings, cancel reservations
 - **Reviews & Ratings**: Leave reviews after dining experiences
 - **Waitlist**: Join waitlists when restaurants are full
