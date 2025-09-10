@@ -108,11 +108,6 @@ The application uses PostgreSQL with Prisma ORM. The database schema includes:
 - Set `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL`
 - Works without SendGrid (logs emails to console)
 
-#### SMS Notifications (Twilio)
-- SMS confirmations and reminders
-- Set `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER`
-- Works without Twilio (logs SMS to console)
-
 ## 🧪 Test Accounts
 
 After seeding the database, you can use these test accounts:
