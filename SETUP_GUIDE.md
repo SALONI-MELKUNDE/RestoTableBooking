@@ -132,7 +132,7 @@ After seeding the database, you can use these test accounts:
 - ✅ Leave reviews and ratings
 - ✅ Instant feedback if all tables are booked (e.g., "No available tables for selected time")
 
-### For Restaurant Owners
+### For ADMIN
 - ✅ Create and manage restaurant profiles
 - ✅ Set up tables and menus
 - ✅ View and manage bookings
