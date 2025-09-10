@@ -17,7 +17,6 @@ TableTrek is a comprehensive restaurant booking platform that allows users to di
 - **Table Management**: Add and configure restaurant tables
 - **Menu Management**: Create menus and menu items
 - **Booking Management**: View and manage all restaurant bookings
-- **Analytics Dashboard**: View booking statistics and insights
 - **Customer Communication**: Send notifications to customers
 
 ## 🛠️ Tech Stack
