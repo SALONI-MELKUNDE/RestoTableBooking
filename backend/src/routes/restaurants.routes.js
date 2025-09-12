@@ -51,3 +51,4 @@ router.put('/:id/tables/:tableId', authenticateToken, updateTable);
 router.delete('/:id/tables/:tableId', authenticateToken, deleteTable);
 
 module.exports = router;
+

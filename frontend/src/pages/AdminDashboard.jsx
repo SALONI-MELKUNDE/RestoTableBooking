@@ -35,6 +35,8 @@ const AdminDashboard = () => {
   const [showMenuItemForm, setShowMenuItemForm] = useState(false);
   const [editingRestaurant, setEditingRestaurant] = useState(null);
   const [editingTable, setEditingTable] = useState(null);
+  const [showEditTableForm, setShowEditTableForm] = useState(false);
+  const [editTableForm, setEditTableForm] = useState({ label: '', seats: 2 });
   const [editingMenu, setEditingMenu] = useState(null);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
   const [selectedMenuForItem, setSelectedMenuForItem] = useState(null);
@@ -627,8 +629,8 @@ const AdminDashboard = () => {
 
   const updateBookingStatus = async (bookingId, status) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/bookings/${bookingId}/status`, {
-        method: 'PUT',
+      const response = await fetch(`http://localhost:3000/api/bookings/${bookingId}/status`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -930,42 +932,92 @@ const AdminDashboard = () => {
       )}
 
       {selectedRestaurant ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {tables.map((table) => (
-            <div key={table.id} className="bg-white p-4 rounded-lg shadow">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold">{table.label}</h3>
-                <div className="flex gap-1">
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {tables.map((table) => (
+              <div key={table.id} className="bg-white p-4 rounded-lg shadow">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-semibold">{table.label}</h3>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        setEditingTable(table);
+                        setEditTableForm({ label: table.label, seats: table.seats });
+                        setShowEditTableForm(true);
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={() => deleteTable(table.id)}
+                      className="text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-gray-600">Seats: {table.seats}</p>
+                <div className="mt-2">
                   <button
-                    onClick={() => setEditingTable(table.id)}
-                    className="text-blue-600 hover:text-blue-800"
+                    onClick={() => updateTable(table.id, { isActive: !table.isActive })}
+                    className={`px-3 py-1 rounded text-sm ${
+                      table.isActive 
+                        ? 'bg-green-100 text-green-800' 
+                        : 'bg-red-100 text-red-800'
+                    }`}
                   >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => deleteTable(table.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                    {table.isActive ? 'Active' : 'Inactive'}
                   </button>
                 </div>
               </div>
-              <p className="text-gray-600">Seats: {table.seats}</p>
-              <div className="mt-2">
-                <button
-                  onClick={() => updateTable(table.id, { isActive: !table.isActive })}
-                  className={`px-3 py-1 rounded text-sm ${
-                    table.isActive 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {table.isActive ? 'Active' : 'Inactive'}
+            ))}
+          </div>
+
+          {showEditTableForm && editingTable && (
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h3 className="text-lg font-semibold mb-4">Edit Table: {editingTable.label}</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                updateTable(editingTable.id, editTableForm);
+                setShowEditTableForm(false);
+                setEditingTable(null);
+              }} className="flex gap-4">
+                <input
+                  type="text"
+                  placeholder="Table Label (e.g., T1, VIP1)"
+                  value={editTableForm.label}
+                  onChange={(e) => setEditTableForm({...editTableForm, label: e.target.value})}
+                  className="border rounded-lg px-3 py-2"
+                  required
+                />
+                <input
+                  type="number"
+                  placeholder="Seats"
+                  min="1"
+                  max="20"
+                  value={editTableForm.seats}
+                  onChange={(e) => setEditTableForm({...editTableForm, seats: parseInt(e.target.value)})}
+                  className="border rounded-lg px-3 py-2"
+                  required
+                />
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                  Update Table
                 </button>
-              </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowEditTableForm(false);
+                    setEditingTable(null);
+                  }}
+                  className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+              </form>
             </div>
-          ))}
-        </div>
+          )}
+        </>
       ) : (
         <p className="text-gray-500">Please select a restaurant to manage tables.</p>
       )}
@@ -995,6 +1047,9 @@ const AdminDashboard = () => {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -1026,6 +1081,30 @@ const AdminDashboard = () => {
                       }`}>
                         {booking.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex gap-2">
+                        {booking.status === 'PENDING' && (
+                          <button
+                            onClick={() => updateBookingStatus(booking.id, 'CONFIRMED')}
+                            className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                          >
+                            Confirm
+                          </button>
+                        )}
+                        {booking.status !== 'CANCELLED' && (
+                          <button
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to cancel ${booking.user?.name}'s booking?`)) {
+                                updateBookingStatus(booking.id, 'CANCELLED');
+                              }
+                            }}
+                            className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}

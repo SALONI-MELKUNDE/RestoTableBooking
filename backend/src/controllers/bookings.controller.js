@@ -136,7 +136,11 @@ async function cancelBooking(req, res, next) {
       return res.status(404).json({ message: 'Booking not found' });
     }
     
-    if (booking.userId !== req.user.id) {
+    // Check if user owns the booking OR is the restaurant owner (admin)
+    const isOwner = booking.userId === req.user.id;
+    const isRestaurantOwner = booking.restaurant.ownerId === req.user.id;
+    
+    if (!isOwner && !isRestaurantOwner) {
       return res.status(403).json({ message: 'Not authorized to cancel this booking' });
     }
     
@@ -161,10 +165,19 @@ async function cancelBooking(req, res, next) {
       minute: '2-digit'
     });
 
+    const cancelledBy = isRestaurantOwner && !isOwner ? 'restaurant' : 'customer';
+    const emailSubject = cancelledBy === 'restaurant' 
+      ? 'Booking Cancelled by Restaurant - TableTrek'
+      : 'Booking Cancellation - TableTrek';
+    
+    const emailMessage = cancelledBy === 'restaurant'
+      ? `Hi ${booking.user.name},\n\nWe regret to inform you that your table reservation has been cancelled by the restaurant.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nWe apologize for any inconvenience this may cause. Please contact the restaurant directly for more information or to reschedule.\n\nBest regards,\nThe TableTrek Team`
+      : `Hi ${booking.user.name},\n\nYour table reservation has been successfully cancelled.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nWe're sorry to see you cancel your reservation. We hope to serve you another time!\n\nIf you need to make a new reservation, you can visit our website anytime.\n\nBest regards,\nThe TableTrek Team`;
+
     await sendEmail(
       booking.user.email,
-      'Booking Cancellation - TableTrek',
-      `Hi ${booking.user.name},\n\nYour table reservation has been successfully cancelled.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nWe're sorry to see you cancel your reservation. We hope to serve you another time!\n\nIf you need to make a new reservation, you can visit our website anytime.\n\nBest regards,\nThe TableTrek Team`
+      emailSubject,
+      emailMessage
     );
     
     // Send cancellation notification
@@ -256,10 +269,76 @@ async function getRestaurantBookings(req, res, next) {
   }
 }
 
+async function updateBookingStatus(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    const booking = await prisma.booking.findUnique({
+      where: { id },
+      include: { user: true, restaurant: true }
+    });
+    
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    
+    // Check if user is the restaurant owner
+    if (booking.restaurant.ownerId !== req.user.id) {
+      return res.status(403).json({ message: 'Not authorized to update this booking' });
+    }
+    
+    const updatedBooking = await prisma.booking.update({
+      where: { id },
+      data: { status },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            phone: true
+          }
+        },
+        table: {
+          select: {
+            label: true,
+            seats: true
+          }
+        }
+      }
+    });
+    
+    // Send notification email for status changes
+    if (status === 'CONFIRMED') {
+      const bookingDate = booking.startTime.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      const bookingTime = booking.startTime.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      await sendEmail(
+        booking.user.email,
+        'Booking Confirmed - TableTrek 🍽️',
+        `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed by the restaurant.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. We look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
+      );
+    }
+    
+    res.json({ booking: updatedBooking });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = { 
   checkAvailability, 
   createBooking, 
   cancelBooking, 
   getUserBookings, 
-  getRestaurantBookings 
+  getRestaurantBookings,
+  updateBookingStatus
 };

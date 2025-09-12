@@ -8,6 +8,10 @@ const Profile = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancelling, setCancelling] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, text: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -44,6 +48,44 @@ const Profile = () => {
     } finally {
       setCancelling(null);
     }
+  };
+
+  const openReviewModal = (booking) => {
+    setSelectedBooking(booking);
+    setReviewForm({ rating: 5, text: '' });
+    setShowReviewModal(true);
+  };
+
+  const submitReview = async (e) => {
+    e.preventDefault();
+    try {
+      setSubmittingReview(true);
+      await api.post(`/restaurants/${selectedBooking.restaurant.id}/reviews`, {
+        rating: reviewForm.rating,
+        text: reviewForm.text
+      });
+      
+      // Update the booking to mark as reviewed
+      setBookings(bookings.map(booking => 
+        booking.id === selectedBooking.id 
+          ? { ...booking, hasReview: true }
+          : booking
+      ));
+      
+      setShowReviewModal(false);
+      alert('Review submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const isBookingCompleted = (booking) => {
+    const bookingEndTime = new Date(booking.endTime);
+    const now = new Date();
+    return booking.status === 'CONFIRMED' && bookingEndTime < now;
   };
 
   const formatDate = (dateString) => {
@@ -171,8 +213,8 @@ const Profile = () => {
                     </div>
                   )}
                   
-                  {booking.status === 'CONFIRMED' && (
-                    <div className="flex justify-end">
+                  <div className="flex justify-end space-x-3">
+                    {booking.status === 'CONFIRMED' && !isBookingCompleted(booking) && (
                       <button
                         onClick={() => cancelBooking(booking.id)}
                         disabled={cancelling === booking.id}
@@ -185,16 +227,93 @@ const Profile = () => {
                         )}
                         <span>Cancel Booking</span>
                       </button>
-                    </div>
-                  )}
+                    )}
+                    
+                    {isBookingCompleted(booking) && !booking.hasReview && (
+                      <button
+                        onClick={() => openReviewModal(booking)}
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        <Star className="h-4 w-4" />
+                        <span>Leave Review</span>
+                      </button>
+                    )}
+                    
+                    {booking.hasReview && (
+                      <span className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg">
+                        <Star className="h-4 w-4" />
+                        <span>Review Submitted</span>
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+        
+        {/* Review Modal */}
+        {showReviewModal && selectedBooking && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+              <h3 className="text-lg font-bold mb-4">
+                Review {selectedBooking.restaurant.name}
+              </h3>
+              
+              <form onSubmit={submitReview} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Rating</label>
+                  <div className="flex space-x-1">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setReviewForm({...reviewForm, rating: star})}
+                        className={`text-2xl ${
+                          star <= reviewForm.rating ? 'text-yellow-400' : 'text-gray-300'
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium mb-2">Review (Optional)</label>
+                  <textarea
+                    value={reviewForm.text}
+                    onChange={(e) => setReviewForm({...reviewForm, text: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                    rows="4"
+                    placeholder="Share your experience..."
+                  />
+                </div>
+                
+                <div className="flex space-x-3 pt-4">
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {submittingReview ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewModal(false)}
+                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default Profile;
+

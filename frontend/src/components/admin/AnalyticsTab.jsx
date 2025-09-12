@@ -326,3 +326,4 @@ const AnalyticsTab = ({ restaurant, bookings }) => {
 };
 
 export default AnalyticsTab;
+

@@ -1293,3 +1293,4 @@ const SettingsTab = ({ restaurant, onRestaurantUpdate }) => {
 };
 
 export default RestaurantAdmin;
+

@@ -27,22 +27,6 @@ async function createReview(req, res, next) {
     const { restaurantId } = req.params;
     const { rating, text } = req.body;
     
-    // Check if user has a confirmed booking at this restaurant
-    const hasBooking = await prisma.booking.findFirst({
-      where: {
-        userId: req.user.id,
-        restaurantId,
-        status: 'CONFIRMED',
-        endTime: { lt: new Date() } // Only allow reviews after the booking has ended
-      }
-    });
-    
-    if (!hasBooking) {
-      return res.status(403).json({ 
-        message: 'You can only review restaurants you have dined at' 
-      });
-    }
-    
     // Check if user already reviewed this restaurant
     const existingReview = await prisma.review.findFirst({
       where: {

@@ -4,3 +4,4 @@ module.exports = {
   refreshTokenSecret: process.env.REFRESH_TOKEN_SECRET,
   refreshTokenExpiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d'
 }
+

@@ -151,7 +151,6 @@ model Notification {
 enum Role {
   USER
   RESTAURANT_OWNER
-  ADMIN
 }
 
 enum BookingStatus {
