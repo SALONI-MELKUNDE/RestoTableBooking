@@ -178,6 +178,7 @@ After seeding the database, you can use these test accounts:
 - ✅ Create and manage restaurant profiles
 - ✅ Set up tables and menus
 - ✅ View and manage bookings
+- ✅ Able to view analytics dashbord 
 
 ---
 
