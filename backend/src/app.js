@@ -7,6 +7,7 @@ const bookingRoutes = require('./routes/bookings.routes');
 const reviewRoutes = require('./routes/reviews.routes');
 const waitlistRoutes = require('./routes/waitlist.routes');
 const menuRoutes = require('./routes/menu.routes');
+const analyticsRoutes = require('./routes/analytics.routes');
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api/waitlist', waitlistRoutes);
 app.use('/api/menus', menuRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // error handler
 app.use((err, req, res, next) => {
@@ -27,4 +29,3 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
-

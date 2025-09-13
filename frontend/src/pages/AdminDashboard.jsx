@@ -15,8 +15,27 @@ import {
   Phone,
   Globe,
   ChefHat,
-  Star
+  Star,
+  TrendingUp,
+  BarChart3
 } from 'lucide-react';
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -27,6 +46,8 @@ const AdminDashboard = () => {
   const [tables, setTables] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [menus, setMenus] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState(null);
+  const [overallAnalytics, setOverallAnalytics] = useState(null);
 
   // Form states
   const [showRestaurantForm, setShowRestaurantForm] = useState(false);
@@ -74,8 +95,15 @@ const AdminDashboard = () => {
       fetchTables();
       fetchBookings();
       fetchMenus();
+      fetchAnalytics();
     }
   }, [selectedRestaurant]);
+
+  useEffect(() => {
+    if (user) {
+      fetchOverallAnalytics();
+    }
+  }, [user, restaurants]);
 
   const fetchRestaurants = async () => {
     if (!user?.id) return;
@@ -154,6 +182,37 @@ const AdminDashboard = () => {
     } catch (error) {
       console.error('Error fetching menus:', error);
       setMenus([]);
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    if (!selectedRestaurant?.id) {
+      setAnalyticsData(null);
+      return;
+    }
+    
+    try {
+      const response = await fetch(`http://localhost:3000/api/analytics/restaurants/${selectedRestaurant.id}/analytics`, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      const data = await response.json();
+      setAnalyticsData(data);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      setAnalyticsData(null);
+    }
+  };
+
+  const fetchOverallAnalytics = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/analytics/overview', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+      });
+      const data = await response.json();
+      setOverallAnalytics(data);
+    } catch (error) {
+      console.error('Error fetching overall analytics:', error);
+      setOverallAnalytics(null);
     }
   };
 
@@ -611,7 +670,8 @@ const AdminDashboard = () => {
   };
 
   const deleteTable = async (tableId) => {
-    if (!confirm('Are you sure you want to delete this table?')) return;
+    const userConfirmed = window.confirm('Are you sure you want to delete this table?\n\nThis action cannot be undone.');
+    if (!userConfirmed) return;
     
     try {
       const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/tables/${tableId}`, {
@@ -640,9 +700,14 @@ const AdminDashboard = () => {
       
       if (response.ok) {
         fetchBookings();
+      } else {
+        const errorData = await response.json();
+        console.error('Error updating booking status:', errorData.message);
+        alert(`Error: ${errorData.message}`);
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
+      alert('Failed to update booking status. Please try again.');
     }
   };
 
@@ -658,49 +723,207 @@ const AdminDashboard = () => {
     { id: 'menus', name: 'Menus', icon: ChefHat }
   ];
 
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+
   const renderOverview = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <Building2 className="h-8 w-8 text-blue-600" />
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Total Restaurants</p>
-            <p className="text-2xl font-semibold text-gray-900">{restaurants.length}</p>
+    <div className="space-y-8">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <Building2 className="h-8 w-8 text-blue-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Restaurants</p>
+              <p className="text-2xl font-semibold text-gray-900">{restaurants.length}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <Users className="h-8 w-8 text-green-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Tables</p>
+              <p className="text-2xl font-semibold text-gray-900">{overallAnalytics?.totalTables || 0}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <Calendar className="h-8 w-8 text-purple-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Total Bookings</p>
+              <p className="text-2xl font-semibold text-gray-900">{overallAnalytics?.totalBookings || 0}</p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center">
+            <ChefHat className="h-8 w-8 text-orange-600" />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Menu Items</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {overallAnalytics?.totalMenuItems || 0}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <Users className="h-8 w-8 text-green-600" />
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Total Tables</p>
-            <p className="text-2xl font-semibold text-gray-900">{tables.length}</p>
+
+      {/* Restaurant Performance Chart */}
+      {overallAnalytics?.restaurantPerformance && overallAnalytics.restaurantPerformance.length > 0 && (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center mb-4">
+            <BarChart3 className="h-6 w-6 text-blue-600 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-900">Restaurant Performance Comparison</h3>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={overallAnalytics.restaurantPerformance}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="bookings" fill="#8884d8" name="Bookings" />
+                <Bar dataKey="revenue" fill="#82ca9d" name="Revenue ($)" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <Calendar className="h-8 w-8 text-purple-600" />
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Total Bookings</p>
-            <p className="text-2xl font-semibold text-gray-900">{bookings.length}</p>
+      )}
+
+      {/* Selected Restaurant Analytics */}
+      {selectedRestaurant && analyticsData && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Booking Trends */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center mb-4">
+              <TrendingUp className="h-6 w-6 text-green-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Booking Trends (Last 30 Days)</h3>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={analyticsData.bookingTrends}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="bookings" stroke="#8884d8" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Revenue Estimate */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center mb-4">
+              <DollarSign className="h-6 w-6 text-green-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Revenue Estimate (Last 30 Days)</h3>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={analyticsData.revenueEstimate}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => [`$${value}`, 'Revenue']} />
+                  <Area type="monotone" dataKey="revenue" stroke="#82ca9d" fill="#82ca9d" fillOpacity={0.6} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Booking Status Distribution */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Status Distribution</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={analyticsData.statusDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ status, count }) => `${status}: ${count}`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="count"
+                  >
+                    {analyticsData.statusDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Peak Hours */}
+          <div className="bg-white p-6 rounded-lg shadow">
+            <div className="flex items-center mb-4">
+              <Clock className="h-6 w-6 text-purple-600 mr-2" />
+              <h3 className="text-lg font-semibold text-gray-900">Peak Booking Hours</h3>
+            </div>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analyticsData.peakHours}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="hour" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="bookings" fill="#ffc658" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <ChefHat className="h-8 w-8 text-orange-600" />
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600">Menu Items</p>
-            <p className="text-2xl font-semibold text-gray-900">
-              {menus.reduce((total, menu) => total + (menu.items?.length || 0), 0)}
-            </p>
+      )}
+
+      {/* Table Utilization */}
+      {selectedRestaurant && analyticsData?.tableUtilization && (
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center mb-4">
+            <Users className="h-6 w-6 text-blue-600 mr-2" />
+            <h3 className="text-lg font-semibold text-gray-900">Table Utilization (Last 30 Days)</h3>
+          </div>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={analyticsData.tableUtilization}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="tableLabel" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="bookings" fill="#8884d8" name="Bookings" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Summary Stats */}
+      {selectedRestaurant && analyticsData?.summary && (
+        <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg shadow">
+          <h3 className="text-lg font-semibold mb-4">Analytics Summary - {selectedRestaurant.name}</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold">{analyticsData.summary.totalBookings}</p>
+              <p className="text-sm opacity-90">Total Bookings (30 days)</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold">${analyticsData.summary.totalRevenue?.toFixed(0) || 0}</p>
+              <p className="text-sm opacity-90">Estimated Revenue (30 days)</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold">{analyticsData.summary.avgBookingsPerDay?.toFixed(1) || 0}</p>
+              <p className="text-sm opacity-90">Avg Bookings/Day</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 
@@ -1024,102 +1247,221 @@ const AdminDashboard = () => {
     </div>
   );
 
-  const renderBookings = () => (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">
-        Bookings - {selectedRestaurant?.name || 'Select a restaurant'}
-      </h2>
+  const renderBookings = () => {
+    const pendingBookings = bookings.filter(b => b.status === 'PENDING');
+    const otherBookings = bookings.filter(b => b.status !== 'PENDING');
 
-      {selectedRestaurant ? (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date & Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Party Size
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {bookings.map((booking) => (
-                  <tr key={booking.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div>
-                        <div className="text-sm font-medium text-gray-900">{booking.user?.name}</div>
-                        <div className="text-sm text-gray-500">{booking.user?.email}</div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {new Date(booking.startTime).toLocaleDateString()}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(booking.startTime).toLocaleTimeString()}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {booking.partySize}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
-                        booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {booking.status}
+    return (
+      <div className="space-y-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          Bookings - {selectedRestaurant?.name || 'Select a restaurant'}
+        </h2>
+
+        {selectedRestaurant ? (
+          <>
+            {/* Pending Bookings Alert */}
+            {pendingBookings.length > 0 && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <Clock className="h-5 w-5 text-yellow-400" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      <span className="font-medium">
+                        {pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending review
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex gap-2">
-                        {booking.status === 'PENDING' && (
-                          <button
-                            onClick={() => updateBookingStatus(booking.id, 'CONFIRMED')}
-                            className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
-                          >
-                            Confirm
-                          </button>
-                        )}
-                        {booking.status !== 'CANCELLED' && (
-                          <button
-                            onClick={() => {
-                              if (confirm(`Are you sure you want to cancel ${booking.user?.name}'s booking?`)) {
-                                updateBookingStatus(booking.id, 'CANCELLED');
-                              }
-                            }}
-                            className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      {' '}— These bookings need table assignment and confirmation.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Pending Bookings Section */}
+            {pendingBookings.length > 0 && (
+              <div className="bg-white rounded-lg shadow overflow-hidden border-l-4 border-yellow-400">
+                <div className="bg-yellow-50 px-6 py-3 border-b border-gray-200">
+                  <h3 className="text-lg font-medium text-gray-900 flex items-center">
+                    <Clock className="h-5 w-5 text-yellow-500 mr-2" />
+                    Pending Bookings ({pendingBookings.length})
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">
+                    These bookings were made when all tables were occupied. Review and assign tables.
+                  </p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Customer
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date & Time
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Party Size
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Table
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {pendingBookings.map((booking) => (
+                        <tr key={booking.id} className="bg-yellow-50">
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{booking.user?.name}</div>
+                              <div className="text-sm text-gray-500">{booking.user?.email}</div>
+                              {booking.user?.phone && (
+                                <div className="text-sm text-gray-500">{booking.user.phone}</div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-900">
+                              {new Date(booking.startTime).toLocaleDateString()}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {new Date(booking.startTime).toLocaleTimeString()} - {new Date(booking.endTime).toLocaleTimeString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-medium text-gray-900">{booking.partySize} guests</span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-gray-500 italic">Not assigned</span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => updateBookingStatus(booking.id, 'CONFIRMED')}
+                                className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 flex items-center gap-1"
+                              >
+                                <Check className="h-4 w-4" />
+                                Confirm & Assign Table
+                              </button>
+                              <button
+                                onClick={() => updateBookingStatus(booking.id, 'CANCELLED')}
+                                className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 flex items-center gap-1"
+                              >
+                                <X className="h-4 w-4" />
+                                Reject
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* All Bookings Section */}
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <div className="px-6 py-3 border-b border-gray-200">
+                <h3 className="text-lg font-medium text-gray-900">
+                  All Bookings ({bookings.length})
+                </h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Customer
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Date & Time
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Party Size
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Table
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bookings.map((booking) => (
+                      <tr key={booking.id} className={booking.status === 'PENDING' ? 'bg-yellow-50' : ''}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{booking.user?.name}</div>
+                            <div className="text-sm text-gray-500">{booking.user?.email}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {new Date(booking.startTime).toLocaleDateString()}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {new Date(booking.startTime).toLocaleTimeString()}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {booking.partySize}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {booking.table?.label || 'Not assigned'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            booking.status === 'CONFIRMED' ? 'bg-green-100 text-green-800' :
+                            booking.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <div className="flex gap-2">
+                            {booking.status === 'PENDING' && (
+                              <button
+                                onClick={() => updateBookingStatus(booking.id, 'CONFIRMED')}
+                                className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                              >
+                                Confirm
+                              </button>
+                            )}
+                            {booking.status !== 'CANCELLED' && (
+                              <button
+                                onClick={() => updateBookingStatus(booking.id, 'CANCELLED')}
+                                className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700"
+                              >
+                                Cancel
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500 mb-4">Please select a restaurant to view bookings.</p>
+            <p className="text-sm text-gray-400">Use the dropdown at the top to select a restaurant first.</p>
           </div>
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <p className="text-gray-500 mb-4">Please select a restaurant to view bookings.</p>
-          <p className="text-sm text-gray-400">Use the dropdown at the top to select a restaurant first.</p>
-        </div>
-      )}
-    </div>
-  );
+        )}
+      </div>
+    );
+  };
 
   const renderMenus = () => (
     <div className="space-y-6">
