@@ -61,7 +61,7 @@ npm install
 
 #### Create PostgreSQL Database
 ```sql
-CREATE DATABASE restotablebooking;
+CREATE DATABASE RestoTableBooking;
 ```
 
 #### Run Migrations
