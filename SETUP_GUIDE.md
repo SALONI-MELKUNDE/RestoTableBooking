@@ -83,7 +83,7 @@ Copy `backend/env.example` to `backend/.env` and fill in your values:
 
 ```env
 # Required
-DATABASE_URL=postgresql://username:password@localhost:5432/tabletrek
+DATABASE_URL=postgresql://username:password@localhost:5432/restotablebooking
 JWT_SECRET=your-super-secret-jwt-key-here
 REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
 
