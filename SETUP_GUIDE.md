@@ -61,7 +61,7 @@ npm install
 
 #### Create PostgreSQL Database
 ```sql
-CREATE DATABASE tabletrek;
+CREATE DATABASE restotablebooking;
 ```
 
 #### Run Migrations
