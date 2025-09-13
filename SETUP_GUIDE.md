@@ -245,7 +245,7 @@ Network Error: Failed to fetch
 ### Environment Variables for Production
 ```env
 NODE_ENV=production
-DATABASE_URL=postgresql://user:pass@prod-db:5432/tabletrek
+DATABASE_URL=postgresql://user:pass@prod-db:5432/restotablebooking
 REDIS_URL=redis://prod-redis:6379
 JWT_SECRET=very-long-random-secret-key
 REFRESH_TOKEN_SECRET=another-very-long-random-secret-key
