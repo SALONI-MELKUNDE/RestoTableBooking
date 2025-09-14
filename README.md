@@ -37,11 +37,12 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 ## 🚀 Features
 
 ### Customers
-- Browse/search restaurants
-- Book and cancel tables
-- Manage personal bookings
-- Instant feedback if all tables are booked (e.g., "No available tables for selected time")  
-- Leave reviews & ratings
+- ✅ Browse and search restaurants
+- ✅ Book tables with confirmation
+- ✅ Manage bookings and cancellations
+- ✅ Leave reviews and ratings
+- ✅ Instant feedback if all tables are booked (e.g., "No available tables for selected time")
+
 
 ### Restaurant Owners (Admin)
 - ✅ Create and manage restaurant profiles
