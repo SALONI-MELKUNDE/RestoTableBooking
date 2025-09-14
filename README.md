@@ -85,7 +85,6 @@ Before running the application, make sure you have:
 - PostgreSQL database
 - Redis server
 - SendGrid account (for emails)
-- Twilio account (for SMS)
 
 ---
 
