@@ -245,11 +245,12 @@ Classes like "aspect-w-16 aspect-h-9" have no effect
 ## 🚀 Production Deployment
 
 ### Backend Deployment
-1. Set `NODE_ENV=production`
-2. Use a production PostgreSQL database
-3. Set up Redis for production
-4. Configure proper JWT secrets
-5. Set up SendGrid for notifications
+1. Set `NODE_ENV=production`.
+2. Use a production PostgreSQL database.
+3. Run your Prisma migrations.
+4. Configure JWT secrets: `JWT_SECRET`, `REFRESH_TOKEN_SECRET`.
+5. (Optional) Redis: set `REDIS_URL` only if your backend actually uses it. (but it's implemented)
+6. (Optional) Email: set `SENDGRID_API_KEY` and `SENDGRID_FROM_EMAIL`
 
 ### Frontend Deployment
 1. Build the frontend: `npm run build`
