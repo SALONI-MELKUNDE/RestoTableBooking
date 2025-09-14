@@ -31,7 +31,6 @@
 - [Production Deployment](#-production-deployment)
   - [Backend Deployment](#backend-deployment)
   - [Frontend Deployment](#frontend-deployment)
-  - [Environment Variables for Production](#environment-variables-for-production)
 - [Support](#-support)
 
 ---
