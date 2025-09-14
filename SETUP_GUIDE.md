@@ -256,15 +256,6 @@ Classes like "aspect-w-16 aspect-h-9" have no effect
 2. Deploy the `dist` folder to your hosting service
 3. Update `VITE_API_URL` to your production API URL
 
-### Environment Variables for Production
-```env
-NODE_ENV=production
-DATABASE_URL=postgresql://user:password@localhost:5432/RestoTableBooking?schema=public
-REDIS_URL=redis://prod-redis:6379
-JWT_SECRET=very-long-random-secret-key
-REFRESH_TOKEN_SECRET=another-very-long-random-secret-key
-SENDGRID_API_KEY=your-production-sendgrid-key
-```
 ---
 
 ## 📞 Support
