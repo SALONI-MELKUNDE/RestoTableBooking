@@ -84,7 +84,7 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Loading spinners and empty states
 
 ### ✅ API Client (Networking)
-- **Single API client (Axios) enforced across app**
+- Single API client (Axios) enforced across app
 
 ---
 
