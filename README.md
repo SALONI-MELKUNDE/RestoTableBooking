@@ -271,7 +271,7 @@ npm test
 ### PostgreSQL Connection
 Configure Database connection in your `.env` file:
 ```env
-DATABASE_URL=postgresql://username:password@localhost:5432/tabletrek?schema=public
+DATABASE_URL=postgresql://username:password@localhost:5432/RestoTableBooking?schema=public
 ```
 
 ### JWT Configuration
