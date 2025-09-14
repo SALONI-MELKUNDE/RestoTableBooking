@@ -7,26 +7,42 @@
 - [Quick Start](#-quick-start)
   - [Prerequisites](#prerequisites)
   - [1. Install Dependencies](#1-install-dependencies)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
   - [2. Database Setup](#2-database-setup)
+    - [Create PostgreSQL Database](#create-postgresql-database)
+    - [Run Migrations](#run-migrations)
+    - [Seed Database (Optional)](#seed-database-optional)
   - [3. Environment Configuration](#3-environment-configuration)
+    - [Backend Environment](#backend-environment)
+      - [Required](#required)
+      - [Optional (for production features)](#optional-for-production-features)
+    - [Frontend Environment](#frontend-environment)
   - [4. Start the Application](#4-start-the-application)
+    - [Terminal 1 - Backend](#terminal-1---backend)
+    - [Terminal 2 - Frontend](#terminal-2---frontend)
   - [5. Access the Application](#5-access-the-application)
 - [Configuration Details](#-configuration-details)
   - [Database Configuration](#database-configuration)
   - [Authentication](#authentication)
   - [Optional Services](#optional-services)
-    - [Redis](#redis-recommended-for-production)
+    - [Redis (Recommended for Production)](#redis-recommended-for-production)
     - [Email Notifications (SendGrid)](#email-notifications-sendgrid)
 - [Test Accounts](#-test-accounts)
+  - [Admin Account](#admin-account)
+  - [User Account](#user-account)
 - [Features](#-features)
-  - [For Customers](#for-customers)
-  - [For Admin](#for-admin)
+  - [Customers](#customers)
+  - [ADMIN](#admin)
 - [Troubleshooting](#-troubleshooting)
-  - [1. Database Connection Error](#1-database-connection-error)
-  - [2. Redis Connection Error](#2-redis-connection-error)
-  - [3. Port Already in Use](#3-port-already-in-use)
-  - [4. Module Not Found](#4-module-not-found)
-  - [5. Frontend API Connection Error](#5-frontend-api-connection-error)
+  - [Common Issues](#common-issues)
+    - [1. Database Connection Error](#1-database-connection-error)
+    - [2. Redis Connection Error](#2-redis-connection-error)
+    - [3. Port Already in Use](#3-port-already-in-use)
+    - [4. Module Not Found](#4-module-not-found)
+    - [5. Frontend API Connection Error](#5-frontend-api-connection-error)
+    - [6. 401 Unauthorized / Token Refresh Loop](#6-401-unauthorized--token-refresh-loop)
+    - [7. Tailwind Aspect Ratio Classes Don’t Work](#7-tailwind-aspect-ratio-classes-dont-work)
   - [Development Tips](#development-tips)
 - [Production Deployment](#-production-deployment)
   - [Backend Deployment](#backend-deployment)
@@ -160,11 +176,13 @@ After seeding the database, you can use these test accounts:
 ### Admin Account
 - **Email**: `admin@example.com`
 - **Password**: `adminpass`
+- **Role**: **ADMIN** *(or `RESTAURANT_OWNER`)*
 - **Access**: Restaurant management, admin dashboard
 
 ### User Account
 - **Email**: `user@example.com`
 - **Password**: `userpass`
+- **Role**: **USER**
 - **Access**: Browse restaurants, make bookings, leave reviews
 
 ---
