@@ -193,31 +193,31 @@ After seeding the database, you can use these test accounts:
 ```
 Error: connect ECONNREFUSED 127.0.0.1:5432
 ```
-**Solution**: Ensure PostgreSQL is running and `DATABASE_URL` is correct
+**Solution**: Ensure PostgreSQL is running and `DATABASE_URL` is correct.
 
 #### 2. Redis Connection Error
 ```
 Redis Client Error: connect ECONNREFUSED 127.0.0.1:6379
 ```
-**Solution**: Either install Redis or remove `REDIS_URL` from environment
+**Solution**: Either install Redis or remove `REDIS_URL` from environment.
 
 #### 3. Port Already in Use
 ```
 Error: listen EADDRINUSE: address already in use :::3000
 ```
-**Solution**: Change `PORT` in backend `.env` or stop the process using the port
+**Solution**: Change `PORT` in backend `.env` or stop the process using the port.
 
 #### 4. Module Not Found
 ```
 Error: Cannot find module '@prisma/client'
 ```
-**Solution**: Run `npx prisma generate` in the backend directory
+**Solution**: Run `npx prisma generate` in the backend directory.
 
 #### 5. Frontend API Connection Error
 ```
 Network Error: Failed to fetch
 ```
-**Solution**: Ensure backend is running and `VITE_API_URL` is correct
+**Solution**: Ensure backend is running and `VITE_API_URL` is correct.
 
 #### 6. 401 Unauthorized / Token Refresh Loop
 ```
