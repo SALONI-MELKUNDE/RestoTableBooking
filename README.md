@@ -44,10 +44,14 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 - Leave reviews & ratings
 
 ### Restaurant Owners (Admin)
-- Manage restaurant profile
-- Manage tables and menus
-- Approve/reject bookings
-- Owner dashboard with settings and management tabs
+- ✅ Create and manage restaurant profiles
+- ✅ Set up tables (add labels, seats)
+- ✅ Create menus (name, description)
+- ✅ Manage menu items (add/edit/delete, price, category, availability)
+- ✅ View and manage bookings
+- ✅ Manage waiting list (pending): confirm & assign or reject
+- ✅ Able to view analytics dashbord
+
 
 ---
 
