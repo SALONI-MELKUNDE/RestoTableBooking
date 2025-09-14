@@ -113,4 +113,4 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Hot reload for backend and frontend
 - Prisma migrate + seed workflow
 - Clear dev error logging
-- Console fallbacks for Redis/Email/SMS
+- Console fallbacks for Redis/Email
