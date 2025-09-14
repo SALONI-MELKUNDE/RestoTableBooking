@@ -97,8 +97,8 @@ npm run seed
 Copy `backend/env.example` to `backend/.env` and fill in your values:
 
 ```env
-# Required
-NODE_ENV=production
+# Required (local development)
+NODE_ENV=production  
 DATABASE_URL=postgresql://user:password@localhost:5432/RestoTableBooking?schema=public
 JWT_SECRET=your-super-secret-jwt-key-here
 REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
