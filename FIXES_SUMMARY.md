@@ -2,103 +2,115 @@
 
 This file documents the fixes, improvements, and known limitations in the TableTrek project.
 
----
-
 ## 📑 Index
-- [Backend Fixes](#backend-fixes)
-- [Frontend Fixes](#frontend-fixes)
-- [Configuration Improvements](#configuration-improvements)
-- [Security Enhancements](#security-enhancements)
-- [Performance Improvements](#performance-improvements)
-- [Developer Experience](#developer-experience)
+- Backend Fixes
+- Frontend Fixes
+- Configuration Improvements
+- Security Enhancements
+- Performance Improvements
+- Developer Experience
 
 ---
 
 ## 🔧 Backend Fixes
-- ✅ **Authentication**
-  - Added validation for registration (email format, password length)
-  - Implemented JWT + refresh tokens with expiry configuration
-  - Added proper error messages & status codes
-  - Sanitized input (trim, lowercase emails)
 
-- ✅ **Restaurants**
-  - CRUD operations stable
-  - Tables & Menus fully implemented (add, edit, delete)
-  - Owner-only permissions enforced
+### ✅ Authentication
+- Registration validation (email format, password length)
+- JWT access + refresh tokens with expiries
+- Consistent JSON errors & status codes
+- Input sanitization (trim, lowercase emails)
 
-- ✅ **Bookings**
-  - Real-time availability check
-  - Create/cancel bookings working
-  - Owner can cancle bookings
-  - Input validation for date/time (future only)
+### ✅ Restaurants 
+- Restaurant CRUD
+- Owner-only permissions
 
-- ✅ **Reviews**
-  - Restricted to users with past confirmed bookings
-  - Validation for rating values
-  - Safe CRUD operations
+### ✅ Tables 
+- Table creation (and listing where applicable)
+- Basic validations for label and seat capacity
+- Owner permission checks
 
-- ✅ **Error Handling**
-  - Centralized error handler with consistent JSON responses
-  - No sensitive information leaked in API responses
+### ✅ Menus & Items 
+- Menus: create
+- Menu items: add / update / delete
 
-- ✅ **Optional Services**
-  - Redis: gracefully mocked if not configured
-  - SendGrid: logs emails if no API key is provided
-  - Twilio: service exists but not used end-to-end in frontend
+### ✅ Bookings 
+- Real-time availability check
+- Create booking
+- Cancel booking (customer)
+- Admin booking status update (approve/reject)
+- Future-only date/time validation
+- Clear “no availability” response when fully booked
+
+### ✅ Reviews
+- Create & list reviews for restaurants
+- Rating value validation
+- Safe CRUD patterns
+
+### ✅ Error Handling 
+- Centralized error handler
+- No sensitive data leaked in responses
+
+### ✅ Optional Services 
+- Redis optional 
+- SendGrid optional 
 
 ---
 
 ## 🎨 Frontend Fixes
-- ✅ **Authentication Context**
-  - Fixed token refresh handling
-  - Improved error recovery & logging
-  - Prevented infinite redirect loops
 
-- ✅ **Customer Flows**
-  - Browse/search restaurants
-  - Book and cancel tables
-  - Clear error message when no tables are available
-  - Leave reviews after getting table booking confirmation 
+### ✅ Authentication Context
+- Token refresh handling
+- Better error recovery & logging
+- No redirect loops
 
-- ✅ **Owner Dashboard**
-  - Overview tab shows today’s stats & info
-  - Manage tables & menus (add/edit/delete)
-  - Booking management (cancle)
-  - Settings tab for restaurant info
+### ✅ Customer Flows 
+- Browse & search restaurants
+- Book and cancel tables
+- Clear “No available tables for selected time” message
+- Leave reviews after confirmed booking
 
-- ✅ **UI/UX**
-  - Tailwind CSS responsive design
-  - Loading spinners and empty states
+### ✅ Owner Dashboard 
+- Overview with today’s stats, totals, averages, recent bookings
+- Manage tables & menus (add/edit/delete)
+- Booking management: approve/reject, cancel
+- Settings for restaurant info
+
+### ✅ Analytics Dashboard (implemented)
+- KPI cards 
+- Charts with Recharts 
+
+### ✅ UI/UX (implemented)
+- Tailwind CSS responsive design
+- Loading spinners and empty states
 
 ---
 
 ## 📁 Configuration Improvements
-- ✅ Created `backend/env.example` with required & optional variables
-- ✅ Created `frontend/env.example` with API base URL
-- ✅ JWT expiry values documented
-- ✅ Optional services clearly marked (Redis, SendGrid)
+- `backend/.env.example` with required & optional variables
+- `frontend/.env.example` with API base URL
+- JWT expiry values documented
+- Optional services clearly marked (Redis, SendGrid)
+- Database connection details clarified
 
 ---
 
 ## 🛡️ Security Enhancements
-- ✅ Input validation on both frontend & backend
-- ✅ Sanitization of user inputs
-- ✅ Secure password hashing with bcrypt
-- ✅ JWT-based session management
+- Input validation on frontend and backend
+- Input sanitization in forms and APIs
+- Secure password hashing with bcrypt
+- JWT-based session management
+- Role-based authorization on owner/admin routes
 
 ---
 
 ## 🚀 Performance Improvements
-- ✅ Reduced duplicate queries in booking checks
-- ✅ Graceful degradation when Redis/email not available
+- Reduced duplicate queries in booking checks
+- Graceful degradation when Redis or email not available
 
 ---
 
 ## 🔄 Developer Experience
-- ✅ Hot reload for backend & frontend
-- ✅ Prisma migrate + seed workflow
-- ✅ Clear error logging in dev mode
-- ✅ Console fallback for Redis/Email/SMS
-
----
-
+- Hot reload for backend and frontend
+- Prisma migrate + seed workflow
+- Clear dev error logging
+- Console fallbacks for Redis/Email/SMS
