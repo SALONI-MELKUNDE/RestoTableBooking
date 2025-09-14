@@ -83,6 +83,7 @@ Copy `backend/env.example` to `backend/.env` and fill in your values:
 
 ```env
 # Required
+NODE_ENV=production
 DATABASE_URL=postgresql://user:password@localhost:5432/RestoTableBooking?schema=public
 JWT_SECRET=your-super-secret-jwt-key-here
 REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
@@ -90,15 +91,16 @@ REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
 # Optional (for production features)
 REDIS_URL=redis://localhost:6379
 SENDGRID_API_KEY=your-sendgrid-api-key
-TWILIO_ACCOUNT_SID=your-twilio-account-sid
-TWILIO_AUTH_TOKEN=your-twilio-auth-token
+SENDGRID_FROM_EMAIL=notifications@yourdomain.com
 ```
 
 #### Frontend Environment
 Copy `frontend/env.example` to `frontend/.env`:
 
 ```env
-VITE_API_URL=http://localhost:3000/api
+VITE_API_URL=/api
+# or
+VITE_API_URL=https://api.yourdomain.com/api
 ```
 ### 4. Start the Application
 
