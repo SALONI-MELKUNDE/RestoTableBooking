@@ -49,10 +49,10 @@ async function main() {
 
 
   const adminRestaurant = await prisma.restaurant.upsert({
-    where: { name: 'TableTrek Admin Restaurant' },
+    where: { name: 'TableTrek Testing Restaurant' },
     update: {},
     create: {
-      name: 'TableTrek Admin Restaurant',
+      name: 'TableTrek Testing Restaurant',
       address: '456 Admin Ave',
       city: 'San Francisco',
       state: 'CA',
