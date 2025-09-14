@@ -223,13 +223,13 @@ Network Error: Failed to fetch
 ```
 Request failed with status code 401
 ```
-**Solution**: Ensure backend implements /auth/refresh and /auth/me; clear accessToken & refreshToken from Local Storage, then sign in again.
+**Solution**: Ensure backend implements `/auth/refresh` and `/auth/me`; clear `accessToken` & `refreshToken` from Local Storage, then sign in again.
 
 #### 7. Tailwind Aspect Ratio Classes Don’t Work
 ```
 Classes like "aspect-w-16 aspect-h-9" have no effect
 ```
-**Solution**: npm i @tailwindcss/aspect-ratio and enable the plugin in tailwind.config.js, then restart Vite.
+**Solution**: `npm i @tailwindcss/aspect-ratio` and enable the plugin in `tailwind.config.js`, then restart Vite.
 
 ### Development Tips
 
