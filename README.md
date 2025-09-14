@@ -59,20 +59,21 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Node.js** with Express.js
-- **PostgreSQL** database with Prisma ORM
-- **Redis** for caching and job queues
-- **JWT** for authentication
-- **BullMQ** for background job processing
-- **SendGrid** for email notifications
-- **Twilio** for SMS notifications
+- Node.js with Express.js *(expected by frontend)*
+- PostgreSQL with Prisma ORM *(per project docs)*
+- JWT authentication with refresh tokens
+
+**Optional (only if implemented)**
+- Redis (caching / booking locks)
+- SendGrid (email notifications)
 
 ### Frontend
-- **React 19** with Vite
-- **Tailwind CSS** for styling
-- **React Router** for navigation
-- **Axios** for API calls
-- **Lucide React** for icons
+- React 19 with Vite
+- Tailwind CSS
+- React Router
+- Axios
+- Lucide React
+- Recharts (analytics)
 
 ---
 
