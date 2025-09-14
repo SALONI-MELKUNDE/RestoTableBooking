@@ -219,6 +219,18 @@ Network Error: Failed to fetch
 ```
 **Solution**: Ensure backend is running and `VITE_API_URL` is correct
 
+#### 6. 401 Unauthorized / Token Refresh Loop
+```
+Request failed with status code 401
+```
+**Solution**: Ensure backend implements /auth/refresh and /auth/me; clear accessToken & refreshToken from Local Storage, then sign in again.
+
+#### 7. Tailwind Aspect Ratio Classes Don’t Work
+```
+Classes like "aspect-w-16 aspect-h-9" have no effect
+```
+**Solution**: npm i @tailwindcss/aspect-ratio and enable the plugin in tailwind.config.js, then restart Vite.
+
 ### Development Tips
 
 1. **Hot Reload**: Both frontend and backend support hot reload during development
