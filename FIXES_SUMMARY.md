@@ -36,8 +36,8 @@ This file documents the fixes, improvements, and known limitations in the TableT
 ### ✅ Bookings 
 - Real-time availability check
 - Create booking
-- Cancel booking (customer)
 - Admin booking status update (approve/reject)
+- Cancel booking (customer)
 - Future-only date/time validation
 - Clear “no availability” response when fully booked
 
