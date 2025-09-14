@@ -11,7 +11,6 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - [Security Enhancements](#security-enhancements)
 - [Performance Improvements](#performance-improvements)
 - [Developer Experience](#developer-experience)
-- [Known Gaps](#known-gaps)
 
 ---
 
@@ -103,10 +102,3 @@ This file documents the fixes, improvements, and known limitations in the TableT
 
 ---
 
-## ⚠️ Known Gaps
-- **Waitlist**: Implemented in backend but not wired in frontend UI
-- **Analytics Tab**: UI present, but not connected to real data
-- **Communications Tab**: Placeholder UI, no backend integration
-- **SMS (Twilio)**: Service available in backend, but not used end-to-end
-
----
