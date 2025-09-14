@@ -260,8 +260,8 @@ The application uses the following main entities:
 3. **Set Up Tables**: Configure table capacities
 4. **Manage Menu**: Add menus and menu items
 5. **Manage Bookings**:  
-  - **Pending bookings**: **Confirm** or **Reject**  
-  - **Confirmed bookings**: **Cancel** (revoke) if needed 
+   - **Pending bookings**: **Confirm** or **Reject**  
+   - **Confirmed bookings**: **Cancel** (revoke) if needed 
 6. **Analytics Dashboard**: View key metrics (today/total bookings, average rating, recent bookings)
 
 ---
