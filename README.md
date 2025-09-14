@@ -94,7 +94,7 @@ Before running the application, make sure you have:
 
 ```bash
 git clone <repository-url>
-cd tabletrek
+cd RestoTableBooking
 ```
 
 ### 2. Backend Setup
@@ -108,7 +108,7 @@ Create a `.env` file in the backend directory:
 
 ```env
 # Database
-DATABASE_URL=postgresql://username:password@localhost:5432/tabletrek
+DATABASE_URL=postgresql://username:password@localhost:5432/RestoTableBooking
 
 # Redis
 REDIS_URL=redis://localhost:6379
@@ -124,7 +124,6 @@ SENDGRID_API_KEY=your-sendgrid-api-key
 
 # External APIs
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
-OPENWEATHER_API_KEY=your-openweather-api-key
 
 # Server
 PORT=3000
