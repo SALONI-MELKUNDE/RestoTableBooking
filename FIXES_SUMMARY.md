@@ -83,6 +83,9 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Tailwind CSS responsive design
 - Loading spinners and empty states
 
+### ✅ API Client (Networking)
+- **Single API client (Axios) enforced across app**
+
 ---
 
 ## 📁 Configuration Improvements
@@ -111,6 +114,8 @@ This file documents the fixes, improvements, and known limitations in the TableT
 
 ## 🔄 Developer Experience
 - Hot reload for backend and frontend
+- ESLint rule to block `fetch` and enforce `api` client TODO
 - Prisma migrate + seed workflow
 - Clear dev error logging
 - Console fallbacks for Redis/Email
+
