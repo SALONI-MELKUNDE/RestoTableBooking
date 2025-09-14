@@ -204,41 +204,69 @@ The application uses the following main entities:
 ## 🔌 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Refresh access token
-- `POST /api/auth/logout` - User logout
-- `GET /api/auth/me` - Get current user info
+- **POST** `/api/auth/refresh` — Refresh access token (used by interceptor)
+
+---
 
 ### Restaurants
-- `GET /api/restaurants` - List all restaurants
-- `GET /api/restaurants/:id` - Get restaurant details
-- `POST /api/restaurants` - Create restaurant (Admin)
-- `PUT /api/restaurants/:id` - Update restaurant (Admin)
-- `DELETE /api/restaurants/:id` - Delete restaurant (Admin)
+- **GET** `/api/restaurants` — List restaurants  
+  _Query params supported:_ `city`, `availableDate`, `availableTime`, `partySize`
+- **GET** `/api/restaurants/:id` — Get restaurant details
+- **POST** `/api/restaurants` — Create restaurant
+- **PUT** `/api/restaurants/:id` — Update restaurant
+- **DELETE** `/api/restaurants/:id` — Delete restaurant
 
-### Menus 
-- `GET /api/menus/restaurant/:restaurantId` — Get menus for a restaurant
-- `POST /api/restaurants/:restaurantId/menus` — Create a menu
-- `POST /api/menus/:menuId/items` — Add menu item 
-- `PUT /api/menus/items/:itemId` — Update menu item
-- `DELETE /api/menus/items/:itemId` — Delete menu item
+---
+
+### Menus
+> _Both canonical and alt paths are used in the current codebase._
+- **GET** `/api/menus/restaurant/:restaurantId` — Get menus for a restaurant
+- **GET** `/api/restaurants/:restaurantId/menus` — Get menus for a restaurant _(alt path)_
+- **POST** `/api/restaurants/:restaurantId/menus` — Create a menu
+- **PUT** `/api/menus/:menuId` — Update a menu
+- **PUT** `/api/restaurants/menus/:menuId` — Update a menu _(alt path)_
+- **DELETE** `/api/menus/:menuId` — Delete a menu
+- **DELETE** `/api/restaurants/menus/:menuId` — Delete a menu _(alt path)_
+
+### Menu Items
+- **POST** `/api/menus/:menuId/items` — Add menu item
+- **POST** `/api/restaurants/menus/:menuId/items` — Add menu item _(alt path)_
+- **PUT** `/api/menus/items/:itemId` — Update menu item
+- **PUT** `/api/restaurants/menu-items/:itemId` — Update menu item _(alt path)_
+- **DELETE** `/api/menus/items/:itemId` — Delete menu item
+- **DELETE** `/api/restaurants/menu-items/:itemId` — Delete menu item _(alt path)_
+
+---
 
 ### Tables
-- `POST /api/restaurants/:id/tables` — Add table 
-- 
+- **GET** `/api/restaurants/:id/tables` — List tables for a restaurant
+- **POST** `/api/restaurants/:id/tables` — Add table
+- **PUT** `/api/restaurants/:id/tables/:tableId` — Update table
+- **DELETE** `/api/restaurants/:id/tables/:tableId` — Delete table
+
+---
 
 ### Bookings
-- `GET /api/bookings/restaurant/:restaurantId` — Restaurant bookings (admin)
-- `PUT /api/restaurants/bookings/:bookingId/status` — Approve/Reject booking 
-- `PATCH /api/bookings/:id/cancel` — Cancel booking
-- `POST /api/bookings` — Create booking 
-- `GET /api/bookings/users/:userId/bookings` — User’s bookings 
-- `GET /api/bookings/restaurants/:id/availability` — Availability check 
+- **POST** `/api/bookings` — Create booking
+- **GET** `/api/bookings/restaurant/:restaurantId` — Restaurant bookings
+- **GET** `/api/restaurants/:restaurantId/bookings` — Restaurant bookings _(alt path)_
+- **PUT** `/api/restaurants/bookings/:bookingId/status` — Approve/Reject booking
+- **PATCH** `/api/bookings/:bookingId/status` — Approve/Reject booking _(alt path)_
+- **PATCH** `/api/bookings/:id/cancel` — Cancel booking
+- **GET** `/api/bookings/users/:userId/bookings` — User’s bookings
+- **GET** `/api/bookings/restaurants/:id/availability` — Availability check  
+  _Query params:_ `startTime` (ISO), `endTime` (ISO), `partySize` (number)
+
+---
 
 ### Reviews
-- `POST /api/restaurants/:id/reviews` — Create review 
-- `GET /api/restaurants/:id/reviews` — List reviews
+- **POST** `/api/restaurants/:id/reviews` — Create review
+
+---
+
+### Analytics
+- **GET** `/api/analytics/overview` — Overall analytics
+- **GET** `/api/analytics/restaurants/:restaurantId/analytics` — Analytics for a restaurant
 
 ---
 
