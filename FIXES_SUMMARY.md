@@ -75,7 +75,7 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Booking management: approve/reject
 - Settings for restaurant info
 
-### ✅ Analytics Dashboard (implemented)
+### ✅ Analytics Dashboard 
 - KPI cards 
 - Charts with Recharts 
 
