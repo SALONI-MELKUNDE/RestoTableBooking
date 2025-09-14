@@ -186,6 +186,9 @@ The application uses the following main entities:
 - **Menus & MenuItems**: Restaurant menu management
 - **Bookings**: Customer table reservations
 - **Reviews**: Customer reviews and ratings
+- **Analytics (derived, no separate table)**:
+  - Computed from **Bookings** and **Reviews**
+  - Examples shown in UI: today’s bookings, total bookings, average rating, status breakdown (PENDING/CONFIRMED/CANCELLED)
 
 ---
 
