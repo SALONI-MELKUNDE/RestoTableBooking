@@ -127,13 +127,17 @@ npm run dev
 ### Database Configuration
 The application uses PostgreSQL with Prisma ORM. The database schema includes:
 - Users (customers and restaurant owners)
-- Restaurants and tables
-- Bookings and reviews
-- Notifications
+- Restaurants
+- Tables
+- Menus & Menu Items
+- Bookings
+- Reviews
 
 ### Authentication
 - JWT-based authentication with refresh tokens
-- Role-based access control (USER/ADMIN)
+- Role-based access control:
+  - **USER**
+  - **ADMIN** *(or `RESTAURANT_OWNER`)*
 - Secure password hashing with bcrypt
 
 ### Optional Services
