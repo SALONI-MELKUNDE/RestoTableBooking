@@ -30,7 +30,7 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Owner permission checks
 
 ### ✅ Menus & Items 
-- Menus: create
+- Menus: add / update / delete
 - Menu items: add / update / delete
 
 ### ✅ Bookings 
