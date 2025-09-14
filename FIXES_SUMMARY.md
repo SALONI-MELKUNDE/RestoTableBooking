@@ -67,12 +67,12 @@ This file documents the fixes, improvements, and known limitations in the TableT
 - Browse & search restaurants
 - Book and cancel tables
 - Clear “No available tables for selected time” message
-- Leave reviews after confirmed booking
+- Leave reviews 
 
 ### ✅ Owner Dashboard 
 - Overview with today’s stats, totals, averages, recent bookings
 - Manage tables & menus (add/edit/delete)
-- Booking management: approve/reject, cancel
+- Booking management: approve/reject
 - Settings for restaurant info
 
 ### ✅ Analytics Dashboard (implemented)
