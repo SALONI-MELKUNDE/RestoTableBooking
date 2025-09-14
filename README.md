@@ -38,7 +38,6 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 
 ### Customers
 - Browse/search restaurants
-- Real-time booking availability check
 - Book and cancel tables
 - Manage personal bookings
 - Instant feedback if all tables are booked (e.g., "No available tables for selected time")  
