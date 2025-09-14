@@ -29,7 +29,6 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
 - [Usage](#-usage)
   - [For Customers](#for-customers)
   - [For Restaurant Owners (Admin)](#for-restaurant-owners)
-- [Known Gaps / What’s Not Fully Wired](#-known-gaps--whats-not-fully-wired)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -295,14 +294,6 @@ Ensure Redis is running and accessible:
 ```env
 REDIS_URL=redis://localhost:6379
 ```
----
-
-## ⚠️ Known Gaps / What’s Not Fully Wired
-
-- Waitlist: Backend implemented (join/leave/notify), but no frontend UI yet.
-- Analytics tab: Present in UI; no real analytics wiring.
-- Communications tab: UI only; not integrated with backend.
-- SMS (Twilio): Backend service exists; optional and only used in background jobs if configured. Not exposed in UI.
 
 ---
 
