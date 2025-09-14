@@ -191,7 +191,6 @@ After seeding the database, you can use these test accounts:
 
 ### Customers
 - ✅ Browse and search restaurants
-- ✅ Real-time table availability
 - ✅ Book tables with confirmation
 - ✅ Manage bookings and cancellations
 - ✅ Leave reviews and ratings
