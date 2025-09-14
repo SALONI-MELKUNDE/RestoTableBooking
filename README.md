@@ -24,7 +24,6 @@ A full-stack web app for restaurant discovery, booking, reviews, and owner/admin
   - [Reviews](#reviews)
   - [Menus (public + owner)](#menus-public--owner)
 - [Configuration](#-configuration)
-- [Testing](#-testing)
 - [Deployment](#-deployment)
 - [Usage](#-usage)
   - [For Customers](#for-customers)
@@ -203,37 +202,32 @@ The application uses the following main entities:
 - `GET /api/restaurants` - List all restaurants
 - `GET /api/restaurants/:id` - Get restaurant details
 - `POST /api/restaurants` - Create restaurant (Admin)
-- `PATCH /api/restaurants/:id` - Update restaurant (Admin)
+- `PUT /api/restaurants/:id` - Update restaurant (Admin)
 - `DELETE /api/restaurants/:id` - Delete restaurant (Admin)
 
+### Menus 
+- `GET /api/menus/restaurant/:restaurantId` — Get menus for a restaurant
+- `POST /api/restaurants/:restaurantId/menus` — Create a menu
+- `POST /api/menus/:menuId/items` — Add menu item 
+- `PUT /api/menus/items/:itemId` — Update menu item
+- `DELETE /api/menus/items/:itemId` — Delete menu item
+
+### Tables
+- `POST /api/restaurants/:id/tables` — Add table 
+- 
+
 ### Bookings
-- `GET /api/bookings/restaurants/:id/availability` - Check availability
-- `POST /api/bookings` - Create booking
-- `PATCH /api/bookings/:id/cancel` - Cancel booking
-- `GET /api/bookings/users/:id/bookings` - Get user bookings
-- `GET /api/bookings/admin/restaurants/:id/bookings` - Get restaurant bookings (Admin)
+- `GET /api/bookings/restaurant/:restaurantId` — Restaurant bookings (admin)
+- `PUT /api/restaurants/bookings/:bookingId/status` — Approve/Reject booking 
+- `PATCH /api/bookings/:id/cancel` — Cancel booking
+- `POST /api/bookings` — Create booking 
+- `GET /api/bookings/users/:userId/bookings` — User’s bookings 
+- `GET /api/bookings/restaurants/:id/availability` — Availability check 
 
 ### Reviews
-- `GET /api/restaurants/:id/reviews` - Get restaurant reviews
-- `POST /api/restaurants/:id/reviews` - Create review
-- `PATCH /api/reviews/:id` - Update review
-- `DELETE /api/reviews/:id` - Delete review
+- `POST /api/restaurants/:id/reviews` — Create review 
+- `GET /api/restaurants/:id/reviews` — List reviews
 
----
-
-## 🧪 Testing
-
-### Backend Tests
-```bash
-cd backend
-npm test
-```
-
-### Frontend Tests
-```bash
-cd frontend
-npm test
-```
 ---
 
 ## 🚀 Deployment
