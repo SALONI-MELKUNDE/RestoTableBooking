@@ -250,8 +250,6 @@ REDIS_URL=redis://prod-redis:6379
 JWT_SECRET=very-long-random-secret-key
 REFRESH_TOKEN_SECRET=another-very-long-random-secret-key
 SENDGRID_API_KEY=your-production-sendgrid-key
-TWILIO_ACCOUNT_SID=your-production-twilio-sid
-TWILIO_AUTH_TOKEN=your-production-twilio-token
 ```
 ---
 
