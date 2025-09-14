@@ -233,10 +233,10 @@ Classes like "aspect-w-16 aspect-h-9" have no effect
 
 ### Development Tips
 
-1. **Hot Reload**: Both frontend and backend support hot reload during development
-2. **Database Reset**: Use `npx prisma migrate reset` to reset database
-3. **Logs**: Check console logs for detailed error information
-4. **Network**: Ensure no firewall is blocking the ports
+1. **Hot Reload**: Frontend uses Vite HMR; run backend with a watcher (e.g., `nodemon`). Restart after changing `.env`, `tailwind.config.js`, or `vite.config.js`.
+2. **Database Reset**: `npx prisma migrate reset` (destructive), then `npx prisma generate`. 
+3. **Logs**: Check browser and server consoles, `run npm run lint`. If `@prisma/client` is “module not found”, run `npx prisma generate`.
+4. **Network**: Backend on `http://localhost:3000`; set `VITE_API_URL=/api` (Vite proxy). Free ports `5173/3000`. Ensure `/auth/me` and `/auth/refresh` exist. Install `@tailwindcss/aspect-ratio`. 
 
 ---
 
