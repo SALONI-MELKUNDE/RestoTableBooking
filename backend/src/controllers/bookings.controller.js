@@ -70,18 +70,10 @@ async function createBooking(req, res, next) {
     const busy = new Set(overlapping.map(b => b.tableId));
     const free = tables.find(t => !busy.has(t.id));
     
-    // Auto-confirm if table available, otherwise set to PENDING
-    let bookingStatus, assignedTableId;
-    
-    if (free) {
-      // Table available - auto-confirm booking
-      bookingStatus = 'CONFIRMED';
-      assignedTableId = free.id;
-    } else {
-      // No tables available - set to PENDING for admin review
-      bookingStatus = 'PENDING';
-      assignedTableId = null;
-    }
+    // Always create booking as PENDING; admin will review/confirm
+    const bookingStatus = 'PENDING';
+    const assignedTableId = null;
+
 
     const booking = await prisma.booking.create({
       data: {
@@ -112,26 +104,17 @@ async function createBooking(req, res, next) {
       minute: '2-digit'
     });
 
-    if (bookingStatus === 'CONFIRMED') {
-      await sendEmail(
-        booking.user.email,
-        'Booking Confirmation - TableTrek 🍽️',
-        `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n🪑 Table: ${booking.table?.label || 'TBD'}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. If you need to make any changes or cancel your booking, please contact us as soon as possible.\n\nWe look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
-      );
-    } else {
-      await sendEmail(
-        booking.user.email,
-        'Booking Request Received - TableTrek 🍽️',
-        `Hi ${booking.user.name},\n\nThank you for your booking request! We've received your reservation request and it's currently pending review.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nOur restaurant team will review your request and confirm availability shortly. You'll receive another email once your booking is confirmed or if we need to suggest alternative times.\n\nThank you for your patience!\n\nBest regards,\nThe TableTrek Team`
-      );
-    }
+await sendEmail(
+  booking.user.email,
+  'Booking Request Received - TableTrek 🍽️',
+  `Hi ${booking.user.name},\n\nThank you for your booking request! We've received your reservation request and it's currently pending review.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nOur restaurant team will review your request and confirm availability shortly. You'll receive another email once your booking is confirmed or if we need to suggest alternative times.\n\nThank you for your patience!\n\nBest regards,\nThe TableTrek Team`
+);
 
-    // enqueue notification job
-    const jobType = bookingStatus === 'CONFIRMED' ? 'booking_confirm' : 'booking_pending';
-    await notificationQueue.add(jobType, { bookingId: booking.id }, { 
-      attempts: 3, 
-      backoff: { type: 'exponential', delay: 1000 }
-    });
+await notificationQueue.add(
+  'booking_pending',
+  { bookingId: booking.id },
+  { attempts: 3, backoff: { type: 'exponential', delay: 1000 } }
+);
 
     res.status(201).json({ booking });
   } catch (err) {
