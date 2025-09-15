@@ -426,3 +426,4 @@ const CommunicationsTab = ({ restaurant }) => {
 };
 
 export default CommunicationsTab;
+

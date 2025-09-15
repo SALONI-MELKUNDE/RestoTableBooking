@@ -32,4 +32,3 @@ async function connectRedis() {
 }
 
 module.exports = { client, connectRedis };
-

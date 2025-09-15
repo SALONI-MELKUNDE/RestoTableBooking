@@ -334,3 +334,4 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
 };
 
 export default TablesTab;
+

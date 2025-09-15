@@ -16,3 +16,4 @@ if (process.env.REDIS_URL) {
 }
 
 module.exports = { notificationQueue };
+
