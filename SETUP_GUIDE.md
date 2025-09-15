@@ -76,7 +76,7 @@ npm install
 
 #### Create PostgreSQL Database
 ```sql
-CREATE DATABASE RestoTableBooking;
+CREATE DATABASE resto;
 ```
 
 #### Run Migrations
@@ -99,7 +99,7 @@ Copy `backend/env.example` to `backend/.env` and fill in your values:
 ```env
 # Required (local development)
 NODE_ENV=production  
-DATABASE_URL=postgresql://user:password@localhost:5432/RestoTableBooking?schema=public
+DATABASE_URL=postgresql://user:password@localhost:5432/resto?schema=public
 JWT_SECRET=your-super-secret-jwt-key-here
 REFRESH_TOKEN_SECRET=your-super-secret-refresh-key-here
 
