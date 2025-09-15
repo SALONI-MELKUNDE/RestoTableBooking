@@ -23,7 +23,7 @@ export const showToast = (message, type = 'success', duration = 4000) => {
   // Animate out and remove
   setTimeout(() => {
     toast.style.opacity = '0';
-    toast.style.transform = 'translateX(full)';
+    toast.style.transform = 'translateX(100%)';
     setTimeout(() => {
       if (document.body.contains(toast)) {
         document.body.removeChild(toast);
