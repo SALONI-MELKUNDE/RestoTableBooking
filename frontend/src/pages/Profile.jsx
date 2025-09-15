@@ -75,11 +75,19 @@ const Profile = () => {
       setShowReviewModal(false);
       alert('Review submitted successfully!');
     } catch (error) {
-      console.error('Error submitting review:', error);
-      alert('Failed to submit review');
-    } finally {
-      setSubmittingReview(false);
-    }
+  console.error('Error submitting review:', error);
+  const data = error?.response?.data;
+  const msg =
+    (data && (data.message || data.error || data.msg ||
+      (Array.isArray(data.errors) && data.errors[0]?.message))) ||
+    (typeof data === 'string' ? data : null) ||
+    (error?.message?.includes('Network') ? 'Network error — please try again.' : null) ||
+    'Failed to submit review';
+  alert(msg);
+} finally {
+  setSubmittingReview(false);
+}
+
   };
 
   const isBookingCompleted = (booking) => {
