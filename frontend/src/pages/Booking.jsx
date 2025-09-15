@@ -21,6 +21,15 @@ const Booking = () => {
     partySize: 2,
     duration: 2
   });
+  
+  const localDateForInput = () => {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().split('T')[0];
+  };
+
+  const buildDateTime = (dateStr, timeStr) => new Date(`${dateStr}T${timeStr}`);
+
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -80,52 +89,65 @@ const Booking = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setBookingLoading(true);
-    setError('');
-    setSuccess('');
+  e.preventDefault();
+  setBookingLoading(true);
+  setError('');
+  setSuccess('');
 
-    // Input validation
-    if (!formData.date || !formData.time) {
-      setError('Please select both date and time');
-      setBookingLoading(false);
-      return;
-    }
+  if (!formData.date || !formData.time) {
+    setError('Please select both date and time');
+    setBookingLoading(false);
+    return;
+  }
 
-    const selectedDateTime = new Date(`${formData.date}T${formData.time}`);
-    const now = new Date();
-    
-    if (selectedDateTime <= now) {
-      setError('Please select a future date and time');
-      setBookingLoading(false);
-      return;
-    }
+  const selectedDateTime = buildDateTime(formData.date, formData.time);
+  const now = new Date();
+  if (selectedDateTime <= now) {
+    setError('Please select a future date and time');
+    setBookingLoading(false);
+    return;
+  }
 
-    try {
-      const startTime = new Date(`${formData.date}T${formData.time}`);
-      const endTime = new Date(startTime.getTime() + formData.duration * 60 * 60 * 1000);
-      
-      const response = await api.post('/bookings', {
-        restaurantId,
-        startTime: startTime.toISOString(),
-        endTime: endTime.toISOString(),
-        partySize: parseInt(formData.partySize)
-      });
-      
-      setSuccess('Booking confirmed! You will receive a confirmation email shortly.');
-      
-      // Redirect to profile after a short delay
-      setTimeout(() => {
-        navigate('/profile');
-      }, 2000);
-      
-    } catch (error) {
-      console.error('Booking error:', error);
-      setError(error.response?.data?.message || 'Failed to create booking');
-    } finally {
-      setBookingLoading(false);
-    }
-  };
+  // opening-hours validation
+  const startTime = buildDateTime(formData.date, formData.time);
+  const endTime = new Date(startTime.getTime() + parseFloat(formData.duration) * 60 * 60 * 1000);
+  const openTime = buildDateTime(formData.date, restaurant.openingTime);
+  const closeTime = buildDateTime(formData.date, restaurant.closingTime);
+  if (startTime < openTime || endTime > closeTime) {
+    setError(`This restaurant accepts bookings between ${restaurant.openingTime} and ${restaurant.closingTime}. Please choose a time within hours.`);
+    setBookingLoading(false);
+    return;
+  }
+
+  // availability check
+  const available = await checkAvailability();
+  if (!available) {
+    setError('That slot is unavailable. Please pick another time.');
+    setBookingLoading(false);
+    return;
+  }
+
+  try {
+    const response = await api.post('/bookings', {
+      restaurantId,
+      startTime: startTime.toISOString(),
+      endTime: endTime.toISOString(),
+      partySize: parseInt(formData.partySize, 10)
+    });
+
+    setSuccess('Booking confirmed! You will receive a confirmation email shortly.');
+    setTimeout(() => {
+      navigate('/profile');
+    }, 2000);
+
+  } catch (error) {
+    console.error('Booking error:', error);
+    setError(error.response?.data?.message || 'Failed to create booking');
+  } finally {
+    setBookingLoading(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -205,7 +227,7 @@ const Booking = () => {
                   name="date"
                   value={formData.date}
                   onChange={handleChange}
-                  min={new Date().toISOString().split('T')[0]}
+                  min={localDateForInput()}
                   required
                   className="input-field"
                 />
