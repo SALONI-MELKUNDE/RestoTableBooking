@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import Restaurant from './pages/Restaurant';
 import Booking from './pages/Booking';
 import Profile from './pages/Profile';
-import RestaurantAdmin from './pages/RestaurantAdmin';
+import AdminDashboard from './pages/AdminDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import LearnMore from './pages/LearnMore';
@@ -23,7 +23,7 @@ function App() {
               <Route path="/restaurant/:id" element={<Restaurant />} />
               <Route path="/booking/:restaurantId" element={<Booking />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/restaurant-admin" element={<RestaurantAdmin />} />
+              <Route path="/restaurant-admin" element={<AdminDashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/learn-more" element={<LearnMore />} />
