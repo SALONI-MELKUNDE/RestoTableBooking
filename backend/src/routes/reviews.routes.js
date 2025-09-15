@@ -12,3 +12,4 @@ router.patch('/reviews/:id', authenticateToken, ctrl.updateReview);
 router.delete('/reviews/:id', authenticateToken, ctrl.deleteReview);
 
 module.exports = router;
+

@@ -47,22 +47,15 @@ const Restaurant = () => {
 
     setSubmittingReview(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${id}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(reviewForm)
-      });
+      const response = await api.post(`/restaurants/${id}/reviews`, reviewForm);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowReviewModal(false);
         setReviewForm({ rating: 5, text: '' });
         fetchRestaurant(); // Refresh to show new review
         alert('Review submitted successfully!');
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
         alert(errorData.message || 'Failed to submit review');
       }
     } catch (error) {

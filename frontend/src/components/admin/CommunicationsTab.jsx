@@ -14,6 +14,7 @@ import {
   Check,
   Clock
 } from 'lucide-react';
+import api from '../../services/api';
 
 const CommunicationsTab = ({ restaurant }) => {
   const [activeSection, setActiveSection] = useState('notifications');
@@ -35,12 +36,8 @@ const CommunicationsTab = ({ restaurant }) => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/notifications`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${restaurant.id}/notifications`);
+      const data = response.data;
       setNotifications(data.notifications || []);
     } catch (error) {
       console.error('Error fetching notifications:', error);
@@ -49,12 +46,8 @@ const CommunicationsTab = ({ restaurant }) => {
 
   const fetchCustomers = async () => {
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/customers`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${restaurant.id}/customers`);
+      const data = response.data;
       setCustomers(data.customers || []);
     } catch (error) {
       console.error('Error fetching customers:', error);
@@ -64,16 +57,9 @@ const CommunicationsTab = ({ restaurant }) => {
   const sendNotification = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/notifications`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(newMessage)
-      });
+      const response = await api.post(`/restaurants/${restaurant.id}/notifications`, newMessage);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         fetchNotifications();
         setNewMessage({
           type: 'email',
@@ -440,4 +426,3 @@ const CommunicationsTab = ({ restaurant }) => {
 };
 
 export default CommunicationsTab;
-

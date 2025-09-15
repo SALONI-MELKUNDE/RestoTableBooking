@@ -20,3 +20,4 @@ router.put('/items/:itemId', authenticateToken, updateMenuItem);
 router.delete('/items/:itemId', authenticateToken, deleteMenuItem);
 
 module.exports = router;
+

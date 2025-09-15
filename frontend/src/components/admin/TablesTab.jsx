@@ -9,6 +9,7 @@ import {
   Check,
   X
 } from 'lucide-react';
+import api from '../../services/api';
 
 const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
   const [tables, setTables] = useState([]);
@@ -23,12 +24,8 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
 
   const fetchTables = async () => {
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/tables`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${restaurant.id}/tables`);
+      const data = response.data;
       setTables(data.tables || []);
     } catch (error) {
       console.error('Error fetching tables:', error);
@@ -38,16 +35,9 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
   const addTable = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/tables`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(newTable)
-      });
+      const response = await api.post(`/restaurants/${restaurant.id}/tables`, newTable);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         fetchTables();
         setNewTable({ label: '', seats: 2, x: 0, y: 0 });
         setShowAddTable(false);
@@ -60,16 +50,9 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
 
   const updateTable = async (tableId, updates) => {
     try {
-      const response = await fetch(`/api/restaurants/tables/${tableId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(updates)
-      });
+      const response = await api.put(`/restaurants/tables/${tableId}`, updates);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         fetchTables();
         setEditingTable(null);
         alert('Table updated successfully!');
@@ -83,14 +66,9 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
     if (!confirm('Are you sure you want to delete this table?')) return;
     
     try {
-      const response = await fetch(`/api/restaurants/tables/${tableId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
+      const response = await api.delete(`/restaurants/tables/${tableId}`);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         fetchTables();
         alert('Table deleted successfully!');
       }
@@ -356,4 +334,3 @@ const TablesTab = ({ restaurant, onRestaurantUpdate }) => {
 };
 
 export default TablesTab;
-

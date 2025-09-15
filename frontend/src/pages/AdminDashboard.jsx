@@ -36,6 +36,7 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+import api from '../services/api';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -109,10 +110,8 @@ const AdminDashboard = () => {
     if (!user?.id) return;
     
     try {
-      const response = await fetch('http://localhost:3000/api/restaurants', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      const data = await response.json();
+      const response = await api.get('/restaurants');
+      const data = response.data;
       const userRestaurants = Array.isArray(data) ? data.filter(r => r.ownerId === user.id) : [];
       setRestaurants(userRestaurants);
       if (userRestaurants.length > 0) {
@@ -129,10 +128,8 @@ const AdminDashboard = () => {
     if (!selectedRestaurant?.id) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/tables`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${selectedRestaurant.id}/tables`);
+      const data = response.data;
       setTables(data.tables || []);
     } catch (error) {
       console.error('Error fetching tables:', error);
@@ -147,17 +144,8 @@ const AdminDashboard = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/bookings`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      
-      if (!response.ok) {
-        console.error('Booking fetch failed:', response.status, response.statusText);
-        setBookings([]);
-        return;
-      }
-      
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${selectedRestaurant.id}/bookings`);
+      const data = response.data;
       console.log('Fetched bookings:', data);
       setBookings(data.bookings || []);
     } catch (error) {
@@ -173,10 +161,8 @@ const AdminDashboard = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/menus`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      const data = await response.json();
+      const response = await api.get(`/restaurants/${selectedRestaurant.id}/menus`);
+      const data = response.data;
       console.log('Fetched menus:', data);
       setMenus(data.menus || []);
     } catch (error) {
@@ -187,15 +173,13 @@ const AdminDashboard = () => {
 
   const fetchAnalytics = async () => {
     if (!selectedRestaurant?.id) {
-      setAnalyticsData(null);
+      setAnalyticsData({});
       return;
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/analytics/restaurants/${selectedRestaurant.id}/analytics`, {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      const data = await response.json();
+      const response = await api.get(`/analytics/restaurants/${selectedRestaurant.id}/analytics`);
+      const data = response.data;
       setAnalyticsData(data);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -205,10 +189,8 @@ const AdminDashboard = () => {
 
   const fetchOverallAnalytics = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/analytics/overview', {
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
-      const data = await response.json();
+      const response = await api.get('/analytics/overview');
+      const data = response.data;
       setOverallAnalytics(data);
     } catch (error) {
       console.error('Error fetching overall analytics:', error);
@@ -219,16 +201,24 @@ const AdminDashboard = () => {
   const createRestaurant = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/restaurants', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(restaurantForm)
-      });
+      const newRestaurant = {
+        name: restaurantForm.name,
+        address: restaurantForm.address,
+        city: restaurantForm.city,
+        state: restaurantForm.state,
+        zipCode: restaurantForm.zipCode,
+        country: restaurantForm.country,
+        phone: restaurantForm.phone,
+        website: restaurantForm.website,
+        description: restaurantForm.description,
+        cuisine: restaurantForm.cuisine,
+        priceRange: restaurantForm.priceRange,
+        openingTime: restaurantForm.openingTime,
+        closingTime: restaurantForm.closingTime,
+      };
+      const response = await api.post('/restaurants', newRestaurant);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowRestaurantForm(false);
         setEditingRestaurant(null);
         resetRestaurantForm();
@@ -242,16 +232,10 @@ const AdminDashboard = () => {
   const updateRestaurant = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${editingRestaurant.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(restaurantForm)
-      });
+      const response = await api.put(`/restaurants/${editingRestaurant.id}`, restaurantForm);
+
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowRestaurantForm(false);
         setEditingRestaurant(null);
         resetRestaurantForm();
@@ -310,23 +294,11 @@ const AdminDashboard = () => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${targetRestaurantId}/menus`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({
-          name: menuForm.name,
-          description: menuForm.description,
-          restaurantId: targetRestaurantId
-        })
-      });
+      const response = await api.post(`/restaurants/${targetRestaurantId}/menus`, menuForm);
       
-      const responseData = await response.json();
-      console.log('Menu creation response:', responseData);
+      console.log('Menu creation response:', response.data);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowMenuForm(false);
         setEditingMenu(null);
         setMenuForm({ name: '', description: '', restaurantId: '' });
@@ -390,16 +362,9 @@ const AdminDashboard = () => {
   const updateMenu = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/menus/${editingMenu.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(menuForm)
-      });
+      const response = await api.put(`/restaurants/menus/${editingMenu.id}`, menuForm);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowMenuForm(false);
         setEditingMenu(null);
         setMenuForm({ name: '', description: '' });
@@ -414,12 +379,9 @@ const AdminDashboard = () => {
     if (!itemToDelete) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/menus/${itemToDelete.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      const response = await api.delete(`/restaurants/menus/${itemToDelete.id}`);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         fetchMenus();
         setShowDeleteModal(false);
         setItemToDelete(null);
@@ -447,16 +409,9 @@ const AdminDashboard = () => {
     if (!selectedMenuForItem) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/menus/${selectedMenuForItem.id}/items`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(menuItemForm)
-      });
+      const response = await api.post(`/restaurants/menus/${selectedMenuForItem.id}/items`, menuItemForm);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowMenuItemForm(false);
         setEditingMenuItem(null);
         setSelectedMenuForItem(null);
@@ -471,16 +426,9 @@ const AdminDashboard = () => {
   const updateMenuItem = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/menu-items/${editingMenuItem.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(menuItemForm)
-      });
+      const response = await api.put(`/restaurants/menu-items/${editingMenuItem.id}`, menuItemForm);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowMenuItemForm(false);
         setEditingMenuItem(null);
         setSelectedMenuForItem(null);
@@ -496,12 +444,9 @@ const AdminDashboard = () => {
     if (!itemToDelete) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/menu-items/${itemToDelete.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      const response = await api.delete(`/restaurants/menu-items/${itemToDelete.id}`);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         fetchMenus();
         setShowDeleteModal(false);
         setItemToDelete(null);
@@ -529,14 +474,11 @@ const AdminDashboard = () => {
     
     try {
       console.log('Deleting restaurant:', itemToDelete.id);
-      const response = await fetch(`http://localhost:3000/api/restaurants/${itemToDelete.id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      const response = await api.delete(`/restaurants/${itemToDelete.id}`);
       
       console.log('Delete response status:', response.status);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         // Show success message
         const successMsg = document.createElement('div');
         successMsg.innerHTML = `✅ Restaurant "${itemToDelete.name}" deleted successfully!`;
@@ -564,7 +506,7 @@ const AdminDashboard = () => {
           setSelectedRestaurant(restaurants.length > 1 ? restaurants.find(r => r.id !== itemToDelete.id) : null);
         }
       } else {
-        const errorData = await response.json();
+        const errorData = response.data;
         console.error('Delete failed:', errorData);
         // Show error message
         const errorMsg = document.createElement('div');
@@ -631,16 +573,9 @@ const AdminDashboard = () => {
   const createTable = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/tables`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(tableForm)
-      });
+      const response = await api.post(`/restaurants/${selectedRestaurant.id}/tables`, tableForm);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setShowTableForm(false);
         setTableForm({ label: '', seats: 2 });
         fetchTables();
@@ -652,16 +587,9 @@ const AdminDashboard = () => {
 
   const updateTable = async (tableId, updates) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/tables/${tableId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(updates)
-      });
+      const response = await api.put(`/restaurants/${selectedRestaurant.id}/tables/${tableId}`, updates);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         fetchTables();
       }
     } catch (error) {
@@ -674,12 +602,9 @@ const AdminDashboard = () => {
     if (!userConfirmed) return;
     
     try {
-      const response = await fetch(`http://localhost:3000/api/restaurants/${selectedRestaurant.id}/tables/${tableId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
-      });
+      const response = await api.delete(`/restaurants/${selectedRestaurant.id}/tables/${tableId}`);
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         fetchTables();
       }
     } catch (error) {
@@ -689,21 +614,13 @@ const AdminDashboard = () => {
 
   const updateBookingStatus = async (bookingId, status) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/bookings/${bookingId}/status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({ status })
-      });
+      const response = await api.patch(`/bookings/${bookingId}/status`, { status });
       
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         fetchBookings();
       } else {
-        const errorData = await response.json();
-        console.error('Error updating booking status:', errorData.message);
-        alert(`Error: ${errorData.message}`);
+        console.error('Error updating booking status:', response.data?.message);
+        alert(`Error: ${response.data?.message || 'Failed to update booking status'}`);
       }
     } catch (error) {
       console.error('Error updating booking status:', error);
@@ -1489,21 +1406,22 @@ const AdminDashboard = () => {
                 Select Restaurant
               </label>
               <select
-                value={menuForm.restaurantId || selectedRestaurant?.id || ''}
+                value={String(menuForm.restaurantId || selectedRestaurant?.id || '')}
                 onChange={(e) => {
                   console.log('Restaurant dropdown changed to:', e.target.value);
-                  setMenuForm({...menuForm, restaurantId: e.target.value});
+                  setMenuForm({ ...menuForm, restaurantId: e.target.value }); // keep string
                 }}
                 className="w-full border rounded-lg px-3 py-2"
                 required
               >
                 <option value="">Choose a restaurant...</option>
                 {restaurants.map((restaurant) => (
-                  <option key={restaurant.id} value={restaurant.id}>
+                  <option key={restaurant.id} value={String(restaurant.id)}>
                     {restaurant.name}
                   </option>
                 ))}
               </select>
+
             </div>
             <input
               type="text"

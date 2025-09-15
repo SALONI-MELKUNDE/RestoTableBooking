@@ -78,4 +78,3 @@ const GoogleMap = ({ lat, lon, name, address, className = "" }) => {
 
 export default GoogleMap;
 
-

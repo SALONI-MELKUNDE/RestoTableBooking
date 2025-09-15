@@ -42,6 +42,7 @@ import {
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import api from '../services/api';
 
 const RestaurantAdmin = () => {
   const { user } = useAuth();
@@ -72,12 +73,8 @@ const RestaurantAdmin = () => {
     }
     
     try {
-      const response = await fetch('/api/restaurants', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      const data = await response.json();
+      const response = await api.get('/restaurants');
+      const data = response.data;
       const userRestaurants = Array.isArray(data) ? data.filter(r => r.ownerId === user.id) : [];
       setRestaurants(userRestaurants);
       if (userRestaurants.length > 0) {
@@ -92,8 +89,8 @@ const RestaurantAdmin = () => {
 
   const fetchMenus = async () => {
     try {
-      const response = await fetch(`/api/menus/restaurant/${selectedRestaurant.id}`);
-      const data = await response.json();
+      const response = await api.get(`/menus/restaurant/${selectedRestaurant.id}`);
+      const data = response.data;
       setMenus(data.menus || []);
     } catch (error) {
       console.error('Error fetching menus:', error);
@@ -102,12 +99,8 @@ const RestaurantAdmin = () => {
 
   const fetchBookings = async () => {
     try {
-      const response = await fetch(`/api/bookings/restaurant/${selectedRestaurant.id}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
-      const data = await response.json();
+      const response = await api.get(`/bookings/restaurant/${selectedRestaurant.id}`);
+      const data = response.data;
       setBookings(data.bookings || []);
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -154,15 +147,15 @@ const RestaurantAdmin = () => {
             </div>
             <div className="flex items-center space-x-4">
               <select
-                value={selectedRestaurant?.id || ''}
+                value={String(selectedRestaurant?.id ?? '')}
                 onChange={(e) => {
-                  const restaurant = restaurants.find(r => r.id === e.target.value);
-                  setSelectedRestaurant(restaurant);
+                  const restaurant = restaurants.find(r => String(r.id) === e.target.value);
+                  setSelectedRestaurant(restaurant || null);
                 }}
                 className="select-field"
               >
                 {restaurants.map(restaurant => (
-                  <option key={restaurant.id} value={restaurant.id}>
+                  <option key={restaurant.id} value={String(restaurant.id)}>
                     {restaurant.name}
                   </option>
                 ))}
@@ -390,23 +383,15 @@ const MenusTab = ({ restaurant, menus, onMenusUpdate }) => {
   const createMenu = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/menus`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(newMenu)
-      });
+      const response = await api.post(`/restaurants/${restaurant.id}/menus`, newMenu);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setNewMenu({ name: '', description: '' });
         setShowAddMenu(false);
         onMenusUpdate();
         alert('Menu created successfully!');
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to create menu');
+        alert(response.data?.message || 'Failed to create menu');
       }
     } catch (error) {
       console.error('Error creating menu:', error);
@@ -417,19 +402,12 @@ const MenusTab = ({ restaurant, menus, onMenusUpdate }) => {
   const createMenuItem = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/menus/${selectedMenu.id}/items`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({
-          ...newItem,
-          price: parseFloat(newItem.price)
-        })
+      const response = await api.post(`/menus/${selectedMenu.id}/items`, {
+        ...newItem,
+        price: parseFloat(newItem.price)
       });
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         setNewItem({ 
           name: '', description: '', price: '', category: 'APPETIZER', 
           imageUrl: '', ingredients: '', allergens: '', available: true 
@@ -438,8 +416,7 @@ const MenusTab = ({ restaurant, menus, onMenusUpdate }) => {
         onMenusUpdate();
         alert('Menu item added successfully!');
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to add menu item');
+        alert(response.data?.message || 'Failed to add menu item');
       }
     } catch (error) {
       console.error('Error adding menu item:', error);
@@ -449,16 +426,9 @@ const MenusTab = ({ restaurant, menus, onMenusUpdate }) => {
 
   const updateMenuItem = async (itemId, updates) => {
     try {
-      const response = await fetch(`/api/menus/items/${itemId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(updates)
-      });
+      const response = await api.put(`/menus/items/${itemId}`, updates);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         onMenusUpdate();
         alert('Menu item updated successfully!');
       }
@@ -471,14 +441,9 @@ const MenusTab = ({ restaurant, menus, onMenusUpdate }) => {
     if (!confirm('Are you sure you want to delete this menu item?')) return;
     
     try {
-      const response = await fetch(`/api/menus/items/${itemId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        }
-      });
+      const response = await api.delete(`/menus/items/${itemId}`);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 204) {
         onMenusUpdate();
         alert('Menu item deleted successfully!');
       }
@@ -801,21 +766,13 @@ const BookingsTab = ({ restaurant, bookings, onBookingsUpdate }) => {
 
   const updateBookingStatus = async (bookingId, status) => {
     try {
-      const response = await fetch(`/api/restaurants/bookings/${bookingId}/status`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify({ status })
-      });
+      const response = await api.put(`/restaurants/bookings/${bookingId}/status`, { status });
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         onBookingsUpdate();
         alert(`Booking ${status.toLowerCase()} successfully!`);
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to update booking');
+        alert(response.data?.message || 'Failed to update booking');
       }
     } catch (error) {
       console.error('Error updating booking:', error);
@@ -968,21 +925,13 @@ const SettingsTab = ({ restaurant, onRestaurantUpdate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await api.put(`/restaurants/${restaurant.id}`, formData);
 
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         onRestaurantUpdate();
         alert('Restaurant updated successfully!');
       } else {
-        const error = await response.json();
-        alert(error.message || 'Failed to update restaurant');
+        alert(response.data?.message || 'Failed to update restaurant');
       }
     } catch (error) {
       console.error('Error updating restaurant:', error);
@@ -993,17 +942,10 @@ const SettingsTab = ({ restaurant, onRestaurantUpdate }) => {
   const addTable = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/api/restaurants/${restaurant.id}/tables`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-        },
-        body: JSON.stringify(newTable)
-      });
+      const response = await api.post(`/restaurants/${restaurant.id}/tables`, newTable);
 
-      if (response.ok) {
-        const table = await response.json();
+      if (response.status === 200 || response.status === 201) {
+        const table = response.data;
         setTables([...tables, table]);
         setNewTable({ label: '', seats: 2 });
         setShowAddTable(false);
@@ -1293,4 +1235,3 @@ const SettingsTab = ({ restaurant, onRestaurantUpdate }) => {
 };
 
 export default RestaurantAdmin;
-

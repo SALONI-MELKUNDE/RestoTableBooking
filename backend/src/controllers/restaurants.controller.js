@@ -707,3 +707,4 @@ module.exports = {
   updateTable,
   deleteTable
 };
+

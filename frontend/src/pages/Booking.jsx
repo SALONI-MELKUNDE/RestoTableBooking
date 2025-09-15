@@ -65,14 +65,12 @@ const Booking = () => {
       
       const response = await api.get(
         `/bookings/restaurants/${restaurantId}/availability`,
-        {
-          params: {
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(),
-            partySize: formData.partySize
-          }
-        }
-      );
+        { params: {
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          partySize: formData.partySize
+        }}
+   );
       
       return response.data.available;
     } catch (error) {

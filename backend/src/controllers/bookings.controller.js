@@ -69,20 +69,29 @@ async function createBooking(req, res, next) {
     });
     const busy = new Set(overlapping.map(b => b.tableId));
     const free = tables.find(t => !busy.has(t.id));
-    if (!free) {
-      // optionally add to waitlist (controller for that)
-      return res.status(409).json({ message: 'No available tables for selected time' });
+    
+    // Auto-confirm if table available, otherwise set to PENDING
+    let bookingStatus, assignedTableId;
+    
+    if (free) {
+      // Table available - auto-confirm booking
+      bookingStatus = 'CONFIRMED';
+      assignedTableId = free.id;
+    } else {
+      // No tables available - set to PENDING for admin review
+      bookingStatus = 'PENDING';
+      assignedTableId = null;
     }
 
     const booking = await prisma.booking.create({
       data: {
         restaurantId,
         userId: req.user.id,
-        tableId: free.id,
+        tableId: assignedTableId,
         partySize: Number(partySize),
         startTime: start,
         endTime: end,
-        status: 'CONFIRMED'
+        status: bookingStatus
       },
       include: {
         user: true,
@@ -91,7 +100,7 @@ async function createBooking(req, res, next) {
       }
     });
 
-    // Send booking confirmation email
+    // Send appropriate email based on booking status
     const bookingDate = start.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
@@ -103,14 +112,23 @@ async function createBooking(req, res, next) {
       minute: '2-digit'
     });
 
-    await sendEmail(
-      booking.user.email,
-      'Booking Confirmation - TableTrek 🍽️',
-      `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n🪑 Table: ${booking.table.tableNumber}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. If you need to make any changes or cancel your booking, please contact us as soon as possible.\n\nWe look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
-    );
+    if (bookingStatus === 'CONFIRMED') {
+      await sendEmail(
+        booking.user.email,
+        'Booking Confirmation - TableTrek 🍽️',
+        `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n🪑 Table: ${booking.table?.label || 'TBD'}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. If you need to make any changes or cancel your booking, please contact us as soon as possible.\n\nWe look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
+      );
+    } else {
+      await sendEmail(
+        booking.user.email,
+        'Booking Request Received - TableTrek 🍽️',
+        `Hi ${booking.user.name},\n\nThank you for your booking request! We've received your reservation request and it's currently pending review.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nOur restaurant team will review your request and confirm availability shortly. You'll receive another email once your booking is confirmed or if we need to suggest alternative times.\n\nThank you for your patience!\n\nBest regards,\nThe TableTrek Team`
+      );
+    }
 
     // enqueue notification job
-    await notificationQueue.add('booking_confirm', { bookingId: booking.id }, { 
+    const jobType = bookingStatus === 'CONFIRMED' ? 'booking_confirm' : 'booking_pending';
+    await notificationQueue.add(jobType, { bookingId: booking.id }, { 
       attempts: 3, 
       backoff: { type: 'exponential', delay: 1000 }
     });
@@ -272,11 +290,11 @@ async function getRestaurantBookings(req, res, next) {
 async function updateBookingStatus(req, res, next) {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { status, tableId } = req.body;
     
     const booking = await prisma.booking.findUnique({
       where: { id },
-      include: { user: true, restaurant: true }
+      include: { user: true, restaurant: true, table: true }
     });
     
     if (!booking) {
@@ -288,9 +306,60 @@ async function updateBookingStatus(req, res, next) {
       return res.status(403).json({ message: 'Not authorized to update this booking' });
     }
     
+    // If confirming a pending booking, assign a table
+    let updateData = { status };
+    if (status === 'CONFIRMED' && booking.status === 'PENDING') {
+      if (!tableId) {
+        // Find an available table
+        const tables = await prisma.restaurantTable.findMany({
+          where: { 
+            restaurantId: booking.restaurantId, 
+            isActive: true, 
+            seats: { gte: booking.partySize } 
+          },
+          orderBy: { seats: 'asc' }
+        });
+        
+        const tableIds = tables.map(t => t.id);
+        const overlapping = await prisma.booking.findMany({
+          where: {
+            restaurantId: booking.restaurantId,
+            tableId: { in: tableIds },
+            status: { not: 'CANCELLED' },
+            AND: [
+              { startTime: { lt: booking.endTime } },
+              { endTime: { gt: booking.startTime } }
+            ]
+          }
+        });
+        
+        const busy = new Set(overlapping.map(b => b.tableId));
+        const availableTable = tables.find(t => !busy.has(t.id));
+        
+        if (!availableTable) {
+          // Admin override: If no tables available, assign to the smallest suitable table anyway
+          // This allows overbooking at admin's discretion
+          const smallestTable = tables[0]; // Already sorted by seats ascending
+          if (smallestTable) {
+            updateData.tableId = smallestTable.id;
+            console.log(`Admin override: Assigning table ${smallestTable.id} for overbooking`);
+          } else {
+            // If no tables exist for this party size, still allow admin to confirm
+            // They can manually manage the seating arrangement
+            console.log('No suitable tables found, but allowing admin override');
+            updateData.tableId = null; // Admin will handle manually
+          }
+        } else {
+          updateData.tableId = availableTable.id;
+        }
+      } else {
+        updateData.tableId = tableId;
+      }
+    }
+    
     const updatedBooking = await prisma.booking.update({
       where: { id },
-      data: { status },
+      data: updateData,
       include: {
         user: {
           select: {
@@ -304,27 +373,34 @@ async function updateBookingStatus(req, res, next) {
             label: true,
             seats: true
           }
-        }
+        },
+        restaurant: true
       }
     });
     
     // Send notification email for status changes
-    if (status === 'CONFIRMED') {
-      const bookingDate = booking.startTime.toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-      const bookingTime = booking.startTime.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit'
-      });
+    const bookingDate = booking.startTime.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+    const bookingTime = booking.startTime.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
 
+    if (status === 'CONFIRMED') {
       await sendEmail(
         booking.user.email,
         'Booking Confirmed - TableTrek 🍽️',
-        `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed by the restaurant.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. We look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
+        `Hi ${booking.user.name},\n\nGreat news! Your table reservation has been confirmed by the restaurant.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n👥 Party Size: ${booking.partySize} ${booking.partySize === 1 ? 'person' : 'people'}\n🪑 Table: ${updatedBooking.table?.label || 'TBD'}\n📋 Booking ID: #${booking.id}\n\nPlease arrive on time for your reservation. We look forward to serving you!\n\nBest regards,\nThe TableTrek Team`
+      );
+    } else if (status === 'CANCELLED') {
+      await sendEmail(
+        booking.user.email,
+        'Booking Cancelled - TableTrek 🍽️',
+        `Hi ${booking.user.name},\n\nWe regret to inform you that your table reservation has been cancelled.\n\n📍 Restaurant: ${booking.restaurant.name}\n📅 Date: ${bookingDate}\n🕐 Time: ${bookingTime}\n📋 Booking ID: #${booking.id}\n\nWe apologize for any inconvenience. Please feel free to make a new reservation for a different time.\n\nBest regards,\nThe TableTrek Team`
       );
     }
     

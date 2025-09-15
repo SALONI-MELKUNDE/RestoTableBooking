@@ -36,3 +36,4 @@ export const showSuccess = (message, duration = 4000) => showToast(message, 'suc
 export const showError = (message, duration = 5000) => showToast(message, 'error', duration);
 export const showWarning = (message, duration = 4000) => showToast(message, 'warning', duration);
 export const showInfo = (message, duration = 3000) => showToast(message, 'info', duration);
+

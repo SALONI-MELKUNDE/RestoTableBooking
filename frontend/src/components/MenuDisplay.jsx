@@ -287,4 +287,3 @@ const MenuDisplay = ({ restaurant, menus, isLoading = false }) => {
 };
 
 export default MenuDisplay;
-
