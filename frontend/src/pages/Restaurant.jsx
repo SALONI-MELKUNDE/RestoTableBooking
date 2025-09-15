@@ -38,33 +38,28 @@ const Restaurant = () => {
     return (sum / reviews.length).toFixed(1);
   };
 
-  const submitReview = async (e) => {
-    e.preventDefault();
-    if (!isAuthenticated) {
-      alert('Please sign in to leave a review');
-      return;
-    }
+ const submitReview = async (e) => {
+  e.preventDefault();
+  if (!isAuthenticated) {
+    alert('Please sign in to leave a review');
+    return;
+  }
 
-    setSubmittingReview(true);
-    try {
-      const response = await api.post(`/restaurants/${id}/reviews`, reviewForm);
-
-      if (response.status === 200 || response.status === 201) {
-        setShowReviewModal(false);
-        setReviewForm({ rating: 5, text: '' });
-        fetchRestaurant(); // Refresh to show new review
-        alert('Review submitted successfully!');
-      } else {
-        const errorData = response.data;
-        alert(errorData.message || 'Failed to submit review');
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-      alert('Failed to submit review');
-    } finally {
-      setSubmittingReview(false);
-    }
-  };
+  setSubmittingReview(true);
+  try {
+    await api.post(`/restaurants/${id}/reviews`, reviewForm);
+    setShowReviewModal(false);
+    setReviewForm({ rating: 5, text: '' });
+    fetchRestaurant(); // refresh to include the new review
+    alert('Review submitted successfully!');
+  } catch (error) {
+    console.error('Error submitting review:', error);
+    const msg = error?.response?.data?.message || 'Failed to submit review';
+    alert(msg); // will show "You have already reviewed this restaurant" when backend returns it
+  } finally {
+    setSubmittingReview(false);
+  }
+};
 
   if (loading) {
     return (
@@ -304,3 +299,4 @@ const Restaurant = () => {
 };
 
 export default Restaurant;
+
