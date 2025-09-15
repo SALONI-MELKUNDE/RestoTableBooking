@@ -57,32 +57,30 @@ const Profile = () => {
   };
 
   const submitReview = async (e) => {
-  e.preventDefault();
-  setSubmittingReview(true);
-  try {
-    await api.post(`/restaurants/${selectedBooking.restaurant.id}/reviews`, {
-      rating: reviewForm.rating,
-      text: reviewForm.text,
-    });
-
-    // mark booking as reviewed
-    setBookings(bookings.map((booking) =>
-      booking.id === selectedBooking.id
-        ? { ...booking, hasReview: true }
-        : booking
-    ));
-
-    setShowReviewModal(false);
-    alert('Review submitted successfully!');
-  } catch (error) {
-    console.error('Error submitting review:', error);
-    const msg = error?.response?.data?.message || 'Failed to submit review';
-    alert(msg); // shows "You have already reviewed this restaurant"
-  } finally {
-    setSubmittingReview(false);
-  }
-};
-
+    e.preventDefault();
+    try {
+      setSubmittingReview(true);
+      await api.post(`/restaurants/${selectedBooking.restaurant.id}/reviews`, {
+        rating: reviewForm.rating,
+        text: reviewForm.text
+      });
+      
+      // Update the booking to mark as reviewed
+      setBookings(bookings.map(booking => 
+        booking.id === selectedBooking.id 
+          ? { ...booking, hasReview: true }
+          : booking
+      ));
+      
+      setShowReviewModal(false);
+      alert('Review submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const isBookingCompleted = (booking) => {
     const bookingEndTime = new Date(booking.endTime);
@@ -318,6 +316,7 @@ const Profile = () => {
 };
 
 export default Profile;
+
 
 
 
