@@ -116,7 +116,7 @@ Create a `.env` file in the backend directory:
 
 ```env
 # Database
-DATABASE_URL=postgresql://username:password@localhost:5432/RestoTableBooking
+DATABASE_URL=postgresql://username:password@localhost:5432/resto?schema=public
 
 # Redis
 REDIS_URL=redis://localhost:6379
@@ -311,7 +311,7 @@ The application uses the following main entities:
 ### PostgreSQL Connection
 Configure Database connection in your `.env` file:
 ```env
-DATABASE_URL=postgresql://username:password@localhost:5432/RestoTableBooking?schema=public
+DATABASE_URL=postgresql://username:password@localhost:5432/resto?schema=public
 ```
 
 ### JWT Configuration
