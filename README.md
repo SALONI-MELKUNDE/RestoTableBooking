@@ -204,68 +204,67 @@ The application uses the following main entities:
 ## 🔌 API Endpoints
 
 ### Authentication
-- **POST** `/api/auth/refresh` — Refresh access token 
+- **POST** `/api/auth/refresh` - Refresh access token 
 
 ---
 
 ### Restaurants
-- **GET** `/api/restaurants` — List restaurants  
+- **GET** `/api/restaurants` - List restaurants  
   _Query params supported:_ `city`, `availableDate`, `availableTime`, `partySize`
-- **GET** `/api/restaurants/:id` — Get restaurant details
-- **POST** `/api/restaurants` — Create restaurant
-- **PUT** `/api/restaurants/:id` — Update restaurant
-- **DELETE** `/api/restaurants/:id` — Delete restaurant
+- **GET** `/api/restaurants/:id` - Get restaurant details
+- **POST** `/api/restaurants` - Create restaurant
+- **PUT** `/api/restaurants/:id` - Update restaurant
+- **DELETE** `/api/restaurants/:id` - Delete restaurant
 
 ---
 
 ### Menus
-- **GET** `/api/menus/restaurant/:restaurantId` — Get menus for a restaurant
-- **GET** `/api/restaurants/:restaurantId/menus` — Get menus for a restaurant 
-- **POST** `/api/restaurants/:restaurantId/menus` — Create a menu
-- **PUT** `/api/menus/:menuId` — Update a menu
-- **PUT** `/api/restaurants/menus/:menuId` — Update a menu 
-- **DELETE** `/api/menus/:menuId` — Delete a menu
-- **DELETE** `/api/restaurants/menus/:menuId` — Delete a menu 
+- **GET** `/api/menus/restaurant/:restaurantId` - Get menus for a restaurant
+- **GET** `/api/restaurants/:restaurantId/menus` - Get menus for a restaurant 
+- **POST** `/api/restaurants/:restaurantId/menus` - Create a menu
+- **PUT** `/api/menus/:menuId` - Update a menu
+- **PUT** `/api/restaurants/menus/:menuId` - Update a menu 
+- **DELETE** `/api/menus/:menuId` - Delete a menu
+- **DELETE** `/api/restaurants/menus/:menuId` - Delete a menu 
 
 ### Menu Items
-- **POST** `/api/menus/:menuId/items` — Add menu item
-- **POST** `/api/restaurants/menus/:menuId/items` — Add menu item 
-- **PUT** `/api/menus/items/:itemId` — Update menu item
-- **PUT** `/api/restaurants/menu-items/:itemId` — Update menu item 
-- **DELETE** `/api/menus/items/:itemId` — Delete menu item
-- **DELETE** `/api/restaurants/menu-items/:itemId` — Delete menu item 
+- **POST** `/api/menus/:menuId/items` - Add menu item
+- **POST** `/api/restaurants/menus/:menuId/items` - Add menu item 
+- **PUT** `/api/menus/items/:itemId` - Update menu item
+- **PUT** `/api/restaurants/menu-items/:itemId` - Update menu item 
+- **DELETE** `/api/menus/items/:itemId` - Delete menu item
+- **DELETE** `/api/restaurants/menu-items/:itemId` - Delete menu item 
 
 ---
 
 ### Tables
-- **GET** `/api/restaurants/:id/tables` — List tables for a restaurant
-- **POST** `/api/restaurants/:id/tables` — Add table
-- **PUT** `/api/restaurants/:id/tables/:tableId` — Update table
-- **DELETE** `/api/restaurants/:id/tables/:tableId` — Delete table
+- **GET** `/api/restaurants/:id/tables` - List tables for a restaurant
+- **POST** `/api/restaurants/:id/tables` - Add table
+- **PUT** `/api/restaurants/:id/tables/:tableId` - Update table
+- **DELETE** `/api/restaurants/:id/tables/:tableId` - Delete table
 
 ---
 
 ### Bookings
-- **POST** `/api/bookings` — Create booking
-- **GET** `/api/bookings/restaurant/:restaurantId` — Restaurant bookings
-- **GET** `/api/restaurants/:restaurantId/bookings` — Restaurant bookings 
-- **PUT** `/api/restaurants/bookings/:bookingId/status` — Approve/Reject booking
-- **PATCH** `/api/bookings/:bookingId/status` — Approve/Reject booking 
-- **PATCH** `/api/bookings/:id/cancel` — Cancel booking
-- **GET** `/api/bookings/users/:userId/bookings` — User’s bookings
-- **GET** `/api/bookings/restaurants/:id/availability` — Availability check  
-  _Query params:_ `startTime` (ISO), `endTime` (ISO), `partySize` (number)
+- **POST** `/api/bookings` - Create booking
+- **GET** `/api/bookings/restaurant/:restaurantId` - Restaurant bookings
+- **GET** `/api/restaurants/:restaurantId/bookings` - Restaurant bookings 
+- **PUT** `/api/restaurants/bookings/:bookingId/status` - Approve/Reject booking
+- **PATCH** `/api/bookings/:bookingId/status` - Approve/Reject booking 
+- **PATCH** `/api/bookings/:id/cancel` - Cancel booking
+- **GET** `/api/bookings/users/:userId/bookings` - User’s bookings
+- **GET** `/api/bookings/restaurants/:id/availability` - Availability check  
 
 ---
 
 ### Reviews
-- **POST** `/api/restaurants/:id/reviews` — Create review
+- **POST** `/api/restaurants/:id/reviews` - Create review
 
 ---
 
 ### Analytics
-- **GET** `/api/analytics/overview` — Overall analytics
-- **GET** `/api/analytics/restaurants/:restaurantId/analytics` — Analytics for a restaurant
+- **GET** `/api/analytics/overview` - Overall analytics
+- **GET** `/api/analytics/restaurants/:restaurantId/analytics` - Analytics for a restaurant
 
 ---
 
