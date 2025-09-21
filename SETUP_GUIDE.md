@@ -82,11 +82,13 @@ CREATE DATABASE resto;
 #### Run Migrations
 ```bash
 cd backend
-npx prisma migrate dev
 npx prisma generate
+npx prisma db push
+docker rm -f redis (If existed redies wants to remove)
+docker run -d --name redis -p 6379:6379 redis:7-alpine 
 ```
 
-#### Seed Database (Optional)
+#### Seed Database
 ```bash
 npm run seed
 ```
