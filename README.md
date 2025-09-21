@@ -204,7 +204,7 @@ The application uses the following main entities:
 ## 🔌 API Endpoints
 
 ### Authentication
-- **POST** `/api/auth/refresh` — Refresh access token (used by interceptor)
+- **POST** `/api/auth/refresh` — Refresh access token 
 
 ---
 
@@ -219,22 +219,21 @@ The application uses the following main entities:
 ---
 
 ### Menus
-> _Both canonical and alt paths are used in the current codebase._
 - **GET** `/api/menus/restaurant/:restaurantId` — Get menus for a restaurant
-- **GET** `/api/restaurants/:restaurantId/menus` — Get menus for a restaurant _(alt path)_
+- **GET** `/api/restaurants/:restaurantId/menus` — Get menus for a restaurant 
 - **POST** `/api/restaurants/:restaurantId/menus` — Create a menu
 - **PUT** `/api/menus/:menuId` — Update a menu
-- **PUT** `/api/restaurants/menus/:menuId` — Update a menu _(alt path)_
+- **PUT** `/api/restaurants/menus/:menuId` — Update a menu 
 - **DELETE** `/api/menus/:menuId` — Delete a menu
-- **DELETE** `/api/restaurants/menus/:menuId` — Delete a menu _(alt path)_
+- **DELETE** `/api/restaurants/menus/:menuId` — Delete a menu 
 
 ### Menu Items
 - **POST** `/api/menus/:menuId/items` — Add menu item
-- **POST** `/api/restaurants/menus/:menuId/items` — Add menu item _(alt path)_
+- **POST** `/api/restaurants/menus/:menuId/items` — Add menu item 
 - **PUT** `/api/menus/items/:itemId` — Update menu item
-- **PUT** `/api/restaurants/menu-items/:itemId` — Update menu item _(alt path)_
+- **PUT** `/api/restaurants/menu-items/:itemId` — Update menu item 
 - **DELETE** `/api/menus/items/:itemId` — Delete menu item
-- **DELETE** `/api/restaurants/menu-items/:itemId` — Delete menu item _(alt path)_
+- **DELETE** `/api/restaurants/menu-items/:itemId` — Delete menu item 
 
 ---
 
@@ -249,9 +248,9 @@ The application uses the following main entities:
 ### Bookings
 - **POST** `/api/bookings` — Create booking
 - **GET** `/api/bookings/restaurant/:restaurantId` — Restaurant bookings
-- **GET** `/api/restaurants/:restaurantId/bookings` — Restaurant bookings _(alt path)_
+- **GET** `/api/restaurants/:restaurantId/bookings` — Restaurant bookings 
 - **PUT** `/api/restaurants/bookings/:bookingId/status` — Approve/Reject booking
-- **PATCH** `/api/bookings/:bookingId/status` — Approve/Reject booking _(alt path)_
+- **PATCH** `/api/bookings/:bookingId/status` — Approve/Reject booking 
 - **PATCH** `/api/bookings/:id/cancel` — Cancel booking
 - **GET** `/api/bookings/users/:userId/bookings` — User’s bookings
 - **GET** `/api/bookings/restaurants/:id/availability` — Availability check  
